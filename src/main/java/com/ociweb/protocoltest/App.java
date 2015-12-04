@@ -20,11 +20,11 @@ public class App {
         log.info("Hello World, we are running...");
                
         
-        int totalMessageCount = 1000; //large fixed value for running the test
+        int totalMessageCount = 100000; //large fixed value for running the test
         Histogram histogram = new Histogram(3600000000000L, 2);
         
         
-        long bitPerSecond = 100*1024*1024;
+        long bitPerSecond = 10*1024*1024;
         int maxWrittenChunksInFlight = 10;
         int maxWrittenChunkSizeInBytes= 10*1024;
         StreamRegulator regulator = new StreamRegulator(bitPerSecond, maxWrittenChunksInFlight, maxWrittenChunkSizeInBytes);
@@ -43,7 +43,7 @@ public class App {
         executor.shutdown();//prevent any new submissions to execution service but let those started run.
                  
         try {
-            if (!executor.awaitTermination(2, TimeUnit.SECONDS)) {
+            if (!executor.awaitTermination(20, TimeUnit.SECONDS)) {
                 log.error("test time out, no valid results");
                 System.exit(-1);
             }
