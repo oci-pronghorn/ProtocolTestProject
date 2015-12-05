@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ociweb.pronghorn.pipe.util.StreamRegulator;
+import com.ociweb.pronghorn.util.CPUMonitor;
 
 public class App {
 
@@ -21,14 +22,15 @@ public class App {
                
         
         int totalMessageCount = 100000; //large fixed value for running the test
-        Histogram histogram = new Histogram(3600000000000L, 2);
+        Histogram histogram = new Histogram(3600000000000L, 3);
         
         
         long bitPerSecond = 10*1024*1024;
         int maxWrittenChunksInFlight = 10;
         int maxWrittenChunkSizeInBytes= 10*1024;
         StreamRegulator regulator = new StreamRegulator(bitPerSecond, maxWrittenChunksInFlight, maxWrittenChunkSizeInBytes);
-                        
+                
+        CPUMonitor cpuMonitor = new CPUMonitor(100);
         
         ExecutorService executor = Executors.newFixedThreadPool(2);
         
@@ -37,6 +39,7 @@ public class App {
            
         long startTime = System.currentTimeMillis();
         
+        cpuMonitor.start();
         executor.execute(p);
         executor.execute(c);
         
@@ -50,15 +53,28 @@ public class App {
         } catch (InterruptedException e) {
             //Nothing to do Just exit
         }
+        Histogram cpuHist = cpuMonitor.stop();
         
         long totalBytesSent =regulator.getBytesWritten();
         long durationInMs = System.currentTimeMillis()-startTime;
         
+        long bitsSent = totalBytesSent * 8L;
+        float mBitsPerSec = (1000L*bitsSent)/(float)(durationInMs*1024*1024); 
+        float kBitsPerSec = (1000L*bitsSent)/(float)(durationInMs*1024); 
+        
+        
         log.info("Total duration {}ms",durationInMs);
         log.info("TotalBytes {}",totalBytesSent);
         
-        System.out.println("Latency measured in Nanoseconds");
-        histogram.outputPercentileDistribution(System.out, 100.0);
+        log.info("{} Kbps",kBitsPerSec);        
+        log.info("{} Mbps",mBitsPerSec);
+        
+        System.out.println("Latency Value in microseconds");
+        histogram.outputPercentileDistribution(System.out, 1000.0);
+        
+        System.out.println();
+        System.out.println("Process CPU Usage (All threads started by this Java instance)");
+        cpuHist.outputPercentileDistribution(System.out, CPUMonitor.UNIT_SCALING_RATIO);
     }
     
     
