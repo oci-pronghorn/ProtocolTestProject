@@ -34,8 +34,8 @@ public class App {
         
         ExecutorService executor = Executors.newFixedThreadPool(2);
         
-        Producer p = new Producer(regulator, totalMessageCount);
-        Consumer c = new Consumer(regulator, totalMessageCount, histogram);
+        Runnable p = new Producer(regulator, totalMessageCount);
+        Runnable c = new Consumer(regulator, totalMessageCount, histogram);
            
         long startTime = System.currentTimeMillis();
         
