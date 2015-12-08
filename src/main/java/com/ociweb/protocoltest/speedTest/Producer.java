@@ -1,4 +1,4 @@
-package com.ociweb.protocoltest;
+package com.ociweb.protocoltest.speedTest;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -26,10 +26,10 @@ public class Producer implements Runnable {
             
             OutputStream out = regulator.getOutputStream();
                       
-            
+            StreamRegulator r = regulator;
             int i = count;
             while (i>0) {
-                while (regulator.hasRoomForChunk() && --i>=0) { //Note we are only dec when ther is room for write
+                while (r.hasRoomForChunk() && --i>=0) { //Note we are only dec when ther is room for write
                     
                     //NOTE: the messages sent must contain the timestamp for now so we can compute latency per message 
                     long now = System.nanoTime();
@@ -37,6 +37,13 @@ public class Producer implements Runnable {
                     //Use something to write objects to the output stream
                     //Note this must NOT exceeded the chunk size.
                     
+                        out.write(42);  //Do not keep this code, for example only.
+                        out.write(42);  //Do not keep this code, for example only.
+                        out.write(42);  //Do not keep this code, for example only.
+                        out.write(42);  //Do not keep this code, for example only.
+                        out.write(42);  //Do not keep this code, for example only.
+                        out.write(42);  //Do not keep this code, for example only.
+                        out.write(42);  //Do not keep this code, for example only.
                         out.write(42);  //Do not keep this code, for example only.
                         
                         out.write((byte)(now >>> 56));//Do not keep this code, for example only.
@@ -47,12 +54,7 @@ public class Producer implements Runnable {
                         out.write((byte)(now >>> 16));//Do not keep this code, for example only.
                         out.write((byte)(now >>> 8));//Do not keep this code, for example only.
                         out.write((byte) now);//Do not keep this code, for example only.
-                        
-                       
-                        log.trace("producer:{}",i);
-                    
-                        
-                        
+                      
                     
                     
                 }

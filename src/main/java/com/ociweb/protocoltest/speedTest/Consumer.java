@@ -1,4 +1,4 @@
-package com.ociweb.protocoltest;
+package com.ociweb.protocoltest.speedTest;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,12 +29,21 @@ public class Consumer implements Runnable {
             InputStream in = regulator.getInputStream();
             
             int i = count;
+            StreamRegulator r = regulator; //TODO: may want to make same change in protocol test.
+            Histogram h = histogram;
             while (i>0) {
-                while (regulator.hasNextChunk() && --i>=0) {
+                while (r.hasNextChunk() && --i>=0) {
                     //use something to read the data from the input stream
                     
                     
                         int myValue = in.read();//Do not keep this code, for example only.
+                        myValue = in.read();//Do not keep this code, for example only.
+                        myValue = in.read();//Do not keep this code, for example only.
+                        myValue = in.read();//Do not keep this code, for example only.
+                        myValue = in.read();//Do not keep this code, for example only.
+                        myValue = in.read();//Do not keep this code, for example only.
+                        myValue = in.read();//Do not keep this code, for example only.
+                        myValue = in.read();//Do not keep this code, for example only.
                         if (myValue!=42) {
                             throw new RuntimeException("expected 42 but found "+myValue);
                         }
@@ -53,13 +62,11 @@ public class Consumer implements Runnable {
                         //Note after the message is decoded the latency for the message must be computed using.
                         long latency = System.nanoTime() - timeMessageWasSent;
                         if (latency>=0) {//conditional to protect against numerical overflow, see docs on nanoTime();
-                            histogram.recordValue(latency);
+                            h.recordValue(latency);
                         }
                         
-                        log.trace("consumer:{}",i);
-                        
                 }
-                Thread.yield(); //Only happens when the pipe is empty and there is nothing to read, eg consumer is faster than producer.  
+              //  Thread.yield(); //Only happens when the pipe is empty and there is nothing to read, eg consumer is faster than producer.  
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
