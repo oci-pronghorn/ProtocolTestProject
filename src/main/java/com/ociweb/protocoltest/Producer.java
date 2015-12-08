@@ -48,11 +48,7 @@ public class Producer implements Runnable {
                         out.write((byte)(now >>> 8));//Do not keep this code, for example only.
                         out.write((byte) now);//Do not keep this code, for example only.
                         
-                       
-                        log.trace("producer:{}",i);
-                    
-                        
-                        
+                     
                     
                     
                 }

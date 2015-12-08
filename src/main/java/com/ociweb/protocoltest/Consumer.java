@@ -56,7 +56,6 @@ public class Consumer implements Runnable {
                             histogram.recordValue(latency);
                         }
                         
-                        log.trace("consumer:{}",i);
                         
                 }
                 Thread.yield(); //Only happens when the pipe is empty and there is nothing to read, eg consumer is faster than producer.  

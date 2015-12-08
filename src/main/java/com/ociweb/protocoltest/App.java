@@ -21,11 +21,11 @@ public class App {
         log.info("Hello World, we are running...");
                
         
-        int totalMessageCount = 100000; //large fixed value for running the test
+        int totalMessageCount = 1000000; //large fixed value for running the test
         Histogram histogram = new Histogram(3600000000000L, 3);
         
         
-        long bitPerSecond = 10*1024*1024;
+        long bitPerSecond = 100L*1024L*1024L;
         int maxWrittenChunksInFlight = 10;
         int maxWrittenChunkSizeInBytes= 10*1024;
         StreamRegulator regulator = new StreamRegulator(bitPerSecond, maxWrittenChunksInFlight, maxWrittenChunkSizeInBytes);
@@ -76,9 +76,6 @@ public class App {
         System.out.println("Process CPU Usage (All threads started by this Java instance)");
         cpuHist.outputPercentileDistribution(System.out, CPUMonitor.UNIT_SCALING_RATIO);
     }
-    
-    
-    
     
 
 }
