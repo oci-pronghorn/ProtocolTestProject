@@ -2,9 +2,9 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.ociweb.protocoltest</groupId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>ProtocolTestProject</name>
-  <artifactId>ProtocolTestProject</artifactId>
-  <description>Basic project to start testing roundtrips of different protocols</description>
+  <name>ProtocolTestData</name>
+  <artifactId>ProtocolTestData</artifactId>
+  <description>Test data generators</description>
     <dependencies>
      
   	<dependency>
@@ -13,7 +13,6 @@
 		<version>4.8.1</version>
 		<type>jar</type>
 		<scope>test</scope>
-		<optional>false</optional>
 	</dependency>
 	<dependency>
         <groupId>org.slf4j</groupId>
@@ -36,6 +35,13 @@
 	    <groupId>com.ociweb</groupId>
 		<artifactId>Pronghorn</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.ociweb</groupId>
+      <artifactId>Pronghorn</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+      <type>test-jar</type>
+      <scope>test</scope>
     </dependency>
 
   </dependencies>
@@ -63,6 +69,20 @@
   
   <build>
     <plugins>
+      <plugin>
+      <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.10.1</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.17</version>
+        <configuration>
+            <argLine>-Xmx2048m</argLine>
+        </configuration>
+      </plugin>
+      
         <plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -72,7 +92,7 @@
 				    <compilerArguments>
 				        <profile>compact3</profile>
 				    </compilerArguments>
-					
+					<target>1.8</target>
 					<source>1.8</source>
 					<encoding>UTF-8</encoding>
 				</configuration>
@@ -93,30 +113,6 @@
         </executions>
       </plugin>
 		
-	  <plugin>
-          <artifactId>maven-assembly-plugin</artifactId>
-          <configuration>
-            <archive>
-              <manifest>
-                <mainClass>com.ociweb.protocoltest.App</mainClass>
-              </manifest>
-            </archive>
-            <descriptorRefs>
-              <descriptorRef>jar-with-dependencies</descriptorRef>
-            </descriptorRefs>
-            <finalName>protoTest</finalName>  
-            <appendAssemblyId>false</appendAssemblyId>      
-          </configuration>
-          <executions>
-          <execution>
-            <id>make-assembly</id> <!-- this is used for inheritance merges -->
-            <phase>prepare-package</phase> <!-- bind to the packaging phase -->
-            <goals>
-              <goal>single</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>	
 		
     </plugins>
 
