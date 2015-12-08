@@ -18,23 +18,29 @@
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
         <version>1.7.9</version>
-    </dependency>   	
+    </dependency>
     <dependency>
-	  <groupId>org.slf4j</groupId>
-	  <artifactId>slf4j-simple</artifactId>
-	  <version>1.7.9</version>
-	  <scope>runtime</scope>
-	</dependency>
-	 
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-simple</artifactId>
+    <version>1.7.9</version>
+    <scope>runtime</scope>
+  </dependency>
+
     <dependency>
-	   <groupId>org.hdrhistogram</groupId>
-	    <artifactId>HdrHistogram</artifactId>
-	    <version>2.1.5</version>	
-    </dependency>  
-  	<dependency>
-	    <groupId>com.ociweb</groupId>
-		<artifactId>Pronghorn</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
+     <groupId>org.hdrhistogram</groupId>
+      <artifactId>HdrHistogram</artifactId>
+      <version>2.1.5</version>
+    </dependency>
+    <dependency>
+      <groupId>com.ociweb</groupId>
+    <artifactId>Pronghorn</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <version>2.6.1</version>
     </dependency>
     <dependency>
       <groupId>com.ociweb</groupId>
@@ -45,7 +51,7 @@
     </dependency>
 
   </dependencies>
-  
+
     <repositories>
     <repository>
       <releases>
@@ -66,7 +72,7 @@
       <layout>default</layout>
     </repository>
   </repositories>
-  
+
   <build>
     <plugins>
       <plugin>
@@ -98,6 +104,26 @@
 				</configuration>
 		</plugin>
 		
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>generate-sources</id>
+            <phase>generate-sources</phase>
+            <configuration>
+              <tasks>
+                <exec executable="protoc">
+                  <arg value="--java_out=src/main/java" />
+                  <arg value="src/main/protobuf/pb_message.proto" />
+                </exec>
+              </tasks>
+              <sourceRoot>src/main/java</sourceRoot>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
         <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
@@ -112,11 +138,9 @@
           </execution>
         </executions>
       </plugin>
-		
-		
     </plugins>
 
-  </build>  
+  </build>
 
 
 </project>
