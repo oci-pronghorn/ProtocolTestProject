@@ -5,6 +5,10 @@ package pbexample;
 option java_package = "com.ociweb.protocoltest";
 option java_outer_classname = "PBMessageProvider";
 
+//optimize_for (file option):
+//Can be set to SPEED, CODE_SIZE, or LITE_RUNTIME
+option optimize_for = SPEED;
+
 message ProductQuery {
   required string product_name = 1;
   required int64 online_item_id = 2;
