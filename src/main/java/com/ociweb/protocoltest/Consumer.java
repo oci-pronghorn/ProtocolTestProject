@@ -25,31 +25,31 @@ public class Consumer implements Runnable {
         this.count = count;
         this.histogram = histogram;
     }
-    
+
     public boolean compareSamples(PBQuery query, SequenceExampleA sample) {
-      if (query.getUser() != sample.getUser() ||
-          query.getYear() != sample.getYear() ||
-          query.getMonth() != sample.getMonth() ||
-          query.getDate() != sample.getDate() ||
-          query.getSampleCount() != sample.getSampleCount()) {
-          throw new RuntimeException("Received: "+query+"\nExpecting: "+sample);
-      }
-      if (query.getSamplesList().size() != sample.getSamples().size() ||
-          query.getSampleCount() != query.getSamplesList().size()) {
-          throw new RuntimeException("SampleCount: "+query.getSampleCount()
-                                     +"\nQuery List Size: "+query.getSamplesList().size()
-                                     +"\nGenerated List Size: "+sample.getSamples().size());
-      }
-      for (int x = 0; x < query.getSamplesList().size(); ++x) {
-    	if (query.getSamples(x).getId() != sample.getSamples().get(x).getId() ||
-    		query.getSamples(x).getMeasurement() != sample.getSamples().get(x).getMeasurement() ||
-    		query.getSamples(x).getAction() != sample.getSamples().get(x).getAction()) {
-            throw new RuntimeException("Received Id: "+query.getSamples(x).getId()+" Expected Id: "+sample.getSamples().get(x).getId()
-            +"\nReceived Measurement: "+query.getSamples(x).getMeasurement()+" Expected Measurement: "+sample.getSamples().get(x).getMeasurement()
-            +"\nReceived Action: "+query.getSamples(x).getAction()+" Expected Action: "+sample.getSamples().get(x).getAction());
-    	}
-      }
-      return true;
+        if (query.getUser() != sample.getUser() ||
+            query.getYear() != sample.getYear() ||
+            query.getMonth() != sample.getMonth() ||
+            query.getDate() != sample.getDate() ||
+            query.getSampleCount() != sample.getSampleCount()) {
+            throw new RuntimeException("Received: "+query+"\nExpecting: "+sample);
+        }
+        if (query.getSamplesList().size() != sample.getSamples().size() ||
+            query.getSampleCount() != query.getSamplesList().size()) {
+            throw new RuntimeException("SampleCount: "+query.getSampleCount()
+                                       +"\nQuery List Size: "+query.getSamplesList().size()
+                                       +"\nGenerated List Size: "+sample.getSamples().size());
+        }
+        for (int x = 0; x < query.getSamplesList().size(); ++x) {
+            if (query.getSamples(x).getId() != sample.getSamples().get(x).getId() ||
+                query.getSamples(x).getMeasurement() != sample.getSamples().get(x).getMeasurement() ||
+                query.getSamples(x).getAction() != sample.getSamples().get(x).getAction()) {
+                    throw new RuntimeException("Received Id: "+query.getSamples(x).getId()+" Expected Id: "+sample.getSamples().get(x).getId()
+                        +"\nReceived Measurement: "+query.getSamples(x).getMeasurement()+" Expected Measurement: "+sample.getSamples().get(x).getMeasurement()
+                        +"\nReceived Action: "+query.getSamples(x).getAction()+" Expected Action: "+sample.getSamples().get(x).getAction());
+            }
+        }
+        return true;
     }
 
     @Override
@@ -64,8 +64,8 @@ public class Consumer implements Runnable {
                 while (regulator.hasNextChunk() && --i>=0) {
                     //use something to read the data from the input stream
 
-                	PBQuery query = PBQuery.parseDelimitedFrom(in);
-                	//At this point the message has been decoded, so use this time for latency calcs
+                    PBQuery query = PBQuery.parseDelimitedFrom(in);
+                    //At this point the message has been decoded, so use this time for latency calcs
                     long now = System.nanoTime();
 
                     SequenceExampleA compareToMe = testDataFactory.nextObject();
@@ -76,7 +76,7 @@ public class Consumer implements Runnable {
                         //Note after the message is decoded the latency for the message must be computed using.
                         long latency = now - pbsample.getTime();
                         if (latency>=0) {//conditional to protect against numerical overflow, see docs on nanoTime();
-                          histogram.recordValue(latency);
+                            histogram.recordValue(latency);
                         }
                     }
 

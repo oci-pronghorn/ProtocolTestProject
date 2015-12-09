@@ -15,12 +15,12 @@ message PBQuery {
   required int32 month = 3;
   required int32 date = 4;
   required int32 sampleCount = 5;
-  
+
   message PBSample {
-   required int32 id = 1;
-   required int64 time = 2;
-   required int32 measurement = 3;
-   required int32 action = 4;
+    required int32 id = 1;
+    required int64 time = 2;
+    required int32 measurement = 3;
+    required int32 action = 4;
   }
 
   repeated PBSample samples = 6;

@@ -38,7 +38,7 @@ public class Producer implements Runnable {
                 while (regulator.hasRoomForChunk() && --i>=0) { //Note we are only dec when there is room for write
 
                     //NOTE: the messages sent must contain the timestamp for now so we can compute latency per message
-                    long now = System.nanoTime();
+//                    long now = System.nanoTime();
 
                     //Use something to write objects to the output stream
                     //Note this must NOT exceeded the chunk size.
@@ -46,24 +46,24 @@ public class Producer implements Runnable {
 
                     //NOTE: this is how objects are fetched for writing.
                     SequenceExampleA writeMe = testDataFactory.nextObject();
-                    
+
                     PBQuery.Builder query = PBQuery.newBuilder()
-                         .setUser(writeMe.getUser())
-                         .setYear(writeMe.getYear())
-                         .setMonth(writeMe.getMonth())
-                         .setDate(writeMe.getDate())
-                         .setSampleCount(writeMe.getSampleCount());
-                    
+                        .setUser(writeMe.getUser())
+                        .setYear(writeMe.getYear())
+                        .setMonth(writeMe.getMonth())
+                        .setDate(writeMe.getDate())
+                        .setSampleCount(writeMe.getSampleCount());
+
                     for (SequenceExampleASample sample : writeMe.getSamples()) {
-                      query.addSamples(PBQuery.PBSample.newBuilder()
-                  		    .setId(sample.getId())
-                  		    //TODO: Currently time in sample is incorrect when comparing with
-                  		    //System.nanoTime in consumer.  Need to use same time standard.
-//                  		    .setTime(sample.getTime())
-                  		    .setTime(System.nanoTime())
-                  		    .setMeasurement(sample.getMeasurement())
-                  		    .setAction(sample.getAction())
-                  		    .build());
+                        query.addSamples(PBQuery.PBSample.newBuilder()
+                            .setId(sample.getId())
+                            //TODO: Currently time in sample is incorrect when comparing with
+                            //System.nanoTime in consumer.  Need to use same time standard.
+//                          .setTime(sample.getTime())
+                            .setTime(System.nanoTime())
+                            .setMeasurement(sample.getMeasurement())
+                            .setAction(sample.getAction())
+                            .build());
                     }
 
                     query.build().writeDelimitedTo(out);
