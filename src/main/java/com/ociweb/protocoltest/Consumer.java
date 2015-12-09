@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import com.ociweb.pronghorn.pipe.util.StreamRegulator;
 import com.ociweb.protocoltest.PBMessageProvider.ProductQueryProvider;
 import com.ociweb.protocoltest.PBMessageProvider.ProductQuery;
-import com.ociweb.protocoltest.PBMessageProvider.ProductQuery.ProductAvailability;
 public class Consumer implements Runnable {
 
     private static final Logger log = LoggerFactory.getLogger(Consumer.class);
