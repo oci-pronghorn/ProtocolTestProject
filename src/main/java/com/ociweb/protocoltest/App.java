@@ -10,16 +10,26 @@ import org.slf4j.LoggerFactory;
 
 import com.ociweb.pronghorn.pipe.util.StreamRegulator;
 import com.ociweb.pronghorn.util.CPUMonitor;
+import com.ociweb.protocoltest.data.SequenceExampleA;
+import com.ociweb.protocoltest.data.SequenceExampleAFactory;
+import com.ociweb.protocoltest.data.build.SequenceExampleAFuzzGenerator;
 
 public class App {
 
     //Put this line at the top of every class and be sure to change the Class name to that of the class in question.
     private static final Logger log = LoggerFactory.getLogger(App.class);
     
+    
     public static void main(String[] args) {
        
         log.info("Hello World, we are running...");
-               
+    
+        
+        SequenceExampleAFactory testDataFactory = new SequenceExampleAFuzzGenerator();
+        
+        //NOTE: this is how objects are fetched for writing.
+        SequenceExampleA writeMe = testDataFactory.nextObject();
+        
         
         int totalMessageCount = 1000000; //large fixed value for running the test
         Histogram histogram = new Histogram(3600000000000L, 3);
