@@ -9,23 +9,23 @@ option java_outer_classname = "PBMessageProvider";
 //Can be set to SPEED, CODE_SIZE, or LITE_RUNTIME
 option optimize_for = SPEED;
 
-message ProductQuery {
-  required string product_name = 1;
-  required int64 online_item_id = 2;
-  required string store_item_id = 3;
-  optional string product_desc = 4;
-
-  required int64 query_time = 5;
-
-  message ProductAvailability {
-    required int32 store_id = 1;
-    required string store_location = 2;
-    required int32 num_available = 3;
+message PBQuery {
+  required int32 user = 1;
+  required int32 year = 2;
+  required int32 month = 3;
+  required int32 date = 4;
+  required int32 sampleCount = 5;
+  
+  message PBSample {
+   required int32 id = 1;
+   required int64 time = 2;
+   required int32 measurement = 3;
+   required int32 action = 4;
   }
 
-  repeated ProductAvailability in_stock_locations = 6;
+  repeated PBSample samples = 6;
 }
 
-message ProductQueryProvider {
-  repeated ProductQuery queries = 1;
-}
+//message PBQueryProvider {
+//  repeated PBQuery queries = 1;
+//}

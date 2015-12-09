@@ -7,8 +7,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ociweb.pronghorn.pipe.util.StreamRegulator;
-import com.ociweb.protocoltest.PBMessageProvider.ProductQuery;
-import com.ociweb.protocoltest.PBMessageProvider.ProductQueryProvider;
+import com.ociweb.protocoltest.PBMessageProvider.PBQuery;
+import com.ociweb.protocoltest.data.SequenceExampleA;
+import com.ociweb.protocoltest.data.SequenceExampleAFactory;
+import com.ociweb.protocoltest.data.SequenceExampleASample;
+import com.ociweb.protocoltest.data.build.SequenceExampleAFuzzGenerator;
 
 public class Producer implements Runnable {
 
@@ -28,6 +31,7 @@ public class Producer implements Runnable {
 
             OutputStream out = regulator.getOutputStream();
 
+            SequenceExampleAFactory testDataFactory = new SequenceExampleAFuzzGenerator();
 
             int i = count;
             while (i>0) {
@@ -39,57 +43,30 @@ public class Producer implements Runnable {
                     //Use something to write objects to the output stream
                     //Note this must NOT exceeded the chunk size.
 
-//                        out.write(42);  //Do not keep this code, for example only.
-//
-//                        out.write((byte)(now >>> 56));//Do not keep this code, for example only.
-//                        out.write((byte)(now >>> 48));//Do not keep this code, for example only.
-//                        out.write((byte)(now >>> 40));//Do not keep this code, for example only.
-//                        out.write((byte)(now >>> 32));//Do not keep this code, for example only.
-//                        out.write((byte)(now >>> 24));//Do not keep this code, for example only.
-//                        out.write((byte)(now >>> 16));//Do not keep this code, for example only.
-//                        out.write((byte)(now >>> 8));//Do not keep this code, for example only.
-//                        out.write((byte) now);//Do not keep this code, for example only.
 
-//                        log.trace("producer:{}",i);
-
-                    String productDesc = "Dive into the world of Star Wars"
-                          + " with the LEGO Star Wars Slave 1 75060. "
-                          + "LEGO delivers once again and this time they "
-                          + "make the legendary bounty hunter, Boba Fett, "
-                          + "the star with his cool Slave 1 ship. This model "
-                          + "has a rotating cockpit and wings for flight and "
-                          + "landing mode, dual shooters and hidden blasters. "
-                          + "Perfectly suited to reenact the capture of Han Solo "
-                          + "from Star Wars: Episode V The Empire Strikes Back or"
-                          + " create entirely different stories and add layers to"
-                          + " one of the most loved sagas of all times. Includes 4"
-                          + " mini figures with weapons.";
-                    String productName = "LEGO Star Wars Slave 1 75060";
-                    String storeItemId = "204-00-1114";
-                    long onlineItemId = 17170752;
-
-                    ProductQuery.Builder productQuery = ProductQuery.newBuilder();
-                    productQuery.setProductName(productName)
-                        .setOnlineItemId(onlineItemId)
-                        .setStoreItemId(storeItemId)
-                        .setProductDesc(productDesc);
-
-                    for (int x = 0; x < 5; ++x) {
-                        ProductQuery.ProductAvailability.Builder available_at =
-                            ProductQuery.ProductAvailability.newBuilder()
-                              .setStoreId(x)
-                              .setStoreLocation("St. Louis")
-                              .setNumAvailable(x*2);
-                        productQuery.addInStockLocations(available_at);
+                    //NOTE: this is how objects are fetched for writing.
+                    SequenceExampleA writeMe = testDataFactory.nextObject();
+                    
+                    PBQuery.Builder query = PBQuery.newBuilder()
+                         .setUser(writeMe.getUser())
+                         .setYear(writeMe.getYear())
+                         .setMonth(writeMe.getMonth())
+                         .setDate(writeMe.getDate())
+                         .setSampleCount(writeMe.getSampleCount());
+                    
+                    for (SequenceExampleASample sample : writeMe.getSamples()) {
+                      query.addSamples(PBQuery.PBSample.newBuilder()
+                  		    .setId(sample.getId())
+                  		    //TODO: Currently time in sample is incorrect when comparing with
+                  		    //System.nanoTime in consumer.  Need to use same time standard.
+//                  		    .setTime(sample.getTime())
+                  		    .setTime(System.nanoTime())
+                  		    .setMeasurement(sample.getMeasurement())
+                  		    .setAction(sample.getAction())
+                  		    .build());
                     }
 
-                    productQuery.setQueryTime(now).build();
-
-                    ProductQueryProvider.Builder productQueryProvider =
-                        ProductQueryProvider.newBuilder().addQueries(productQuery);
-
-
-                    productQueryProvider.build().writeDelimitedTo(out);
+                    query.build().writeDelimitedTo(out);
 
                     log.trace("producer:{}",i);
 
