@@ -24,6 +24,7 @@ public class App {
         int totalMessageCount = 1000000; //large fixed value for running the test
         Histogram histogram = new Histogram(3600000000000L, 3);
         
+        long termination_wait = 60; //Seconds to wait for test to complete
         
         long bitPerSecond = 100L*1024L*1024L;
         int maxWrittenChunksInFlight = 10;
@@ -46,7 +47,7 @@ public class App {
         executor.shutdown();//prevent any new submissions to execution service but let those started run.
                  
         try {
-            if (!executor.awaitTermination(20, TimeUnit.SECONDS)) {
+            if (!executor.awaitTermination(termination_wait, TimeUnit.SECONDS)) {
                 log.error("test time out, no valid results");
                 System.exit(-1);
             }
