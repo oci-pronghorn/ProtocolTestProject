@@ -68,8 +68,6 @@ public class Producer implements Runnable {
 
                     query.build().writeDelimitedTo(out);
 
-                    log.trace("producer:{}",i);
-
                 }
                 Thread.yield(); //we are faster than the consumer
             }

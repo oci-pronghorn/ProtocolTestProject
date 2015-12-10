@@ -23,22 +23,21 @@ public class App {
     public static void main(String[] args) {
        
         log.info("Hello World, we are running...");
-    
-        
+            
         SequenceExampleAFactory testDataFactory = new SequenceExampleAFuzzGenerator();
         
         //NOTE: this is how objects are fetched for writing.
         SequenceExampleA writeMe = testDataFactory.nextObject();
         
         
-        int totalMessageCount = 1000000; //large fixed value for running the test
+        int totalMessageCount = 100000; //large fixed value for running the test
         Histogram histogram = new Histogram(3600000000000L, 3);
         
-        long termination_wait = 60; //Seconds to wait for test to complete
+        long termination_wait = 240; //Seconds to wait for test to complete
         
-        long bitPerSecond = 100L*1024L*1024L;
+        long bitPerSecond = 100L*1024L*1024L*1024L;
         int maxWrittenChunksInFlight = 10;
-        int maxWrittenChunkSizeInBytes= 10*1024;
+        int maxWrittenChunkSizeInBytes= 50*1024;
         StreamRegulator regulator = new StreamRegulator(bitPerSecond, maxWrittenChunksInFlight, maxWrittenChunkSizeInBytes);
                 
         CPUMonitor cpuMonitor = new CPUMonitor(100);
@@ -74,18 +73,18 @@ public class App {
         float kBitsPerSec = (1000L*bitsSent)/(float)(durationInMs*1024); 
         
         
-        log.info("Total duration {}ms",durationInMs);
-        log.info("TotalBytes {}",totalBytesSent);
-        
-        log.info("{} Kbps",kBitsPerSec);        
-        log.info("{} Mbps",mBitsPerSec);
-        
         System.out.println("Latency Value in microseconds");
         histogram.outputPercentileDistribution(System.out, 1000.0);
         
         System.out.println();
         System.out.println("Process CPU Usage (All threads started by this Java instance)");
         cpuHist.outputPercentileDistribution(System.out, CPUMonitor.UNIT_SCALING_RATIO);
+        
+        log.info("Total duration {}ms",durationInMs);
+        log.info("TotalBytes {}",totalBytesSent);
+        
+        log.info("{} Kbps",kBitsPerSec);        
+        log.info("{} Mbps",mBitsPerSec);
     }
     
 
