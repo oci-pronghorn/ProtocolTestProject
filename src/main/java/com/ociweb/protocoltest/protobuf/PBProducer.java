@@ -6,6 +6,9 @@ import java.io.OutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.protobuf.*;
+import com.google.protobuf.CodedOutputStream;
+import com.google.protobuf.MessageLite;
 import com.ociweb.pronghorn.pipe.util.StreamRegulator;
 import com.ociweb.protocoltest.data.SequenceExampleA;
 import com.ociweb.protocoltest.data.SequenceExampleAFactory;
@@ -23,6 +26,76 @@ public class PBProducer implements Runnable {
     public PBProducer(StreamRegulator regulator, int count) {
         this.regulator = regulator;
         this.count = count;
+    }
+    
+    private int memoizedSerializedSizeSample = -1;
+    public int getSerializedSize(final SequenceExampleASample sample) {
+      int size = memoizedSerializedSizeSample;
+      if (size != -1) return size;
+
+      size = 0;
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(1, sample.getId());
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt64Size(2, sample.getTime());
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(3, sample.getMeasurement());
+        size += com.google.protobuf.CodedOutputStream
+          .computeInt32Size(4, sample.getAction());
+      memoizedSerializedSize = size;
+      return size;
+    }
+    
+    private int memoizedSerializedSize = -1;
+    public int getSerializedSize(final SequenceExampleA sample) {
+        int size = memoizedSerializedSize;
+        if (size != -1) return size;
+
+        size = 0;
+        size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(1, sample.getUser());
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(2, sample.getYear());
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(3, sample.getMonth());
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(4, sample.getDate());
+          size += com.google.protobuf.CodedOutputStream
+            .computeInt32Size(5, sample.getSampleCount());
+        for (int i = 0; i < sample.getSamples().size(); i++) {
+        	size += com.google.protobuf.CodedOutputStream.computeTagSize(6);
+            final int tmp_size = getSerializedSize(sample.getSamples().get(i));
+            size += com.google.protobuf.CodedOutputStream.computeRawVarint32Size(tmp_size) + tmp_size;
+        }
+        memoizedSerializedSize = size;
+        return size;
+      }
+    
+    public void writeTo(com.google.protobuf.CodedOutputStream output, final SequenceExampleA sample)
+            throws java.io.IOException {
+//		getSerializedSize();
+		output.writeInt32(1, sample.getUser());
+		output.writeInt32(2, sample.getYear());
+		output.writeInt32(3, sample.getMonth());
+		output.writeInt32(4, sample.getDate());
+		output.writeInt32(5, sample.getSampleCount());
+		for (int i = 0; i < sample.getSamples().size(); i++) {
+			output.writeMessage(6, samples_.get(i));
+		}
+	}
+    
+    private void writeDelimitedTo(final OutputStream output, final SequenceExampleA sample) throws IOException {
+        final int serialized = getSerializedSize(sample);
+        final int dataLength = CodedOutputStream.computeRawVarint32Size(serialized) + serialized;
+        final int DEFAULT_BUFFER_SIZE = 4096;
+        final int bufferSize = dataLength > DEFAULT_BUFFER_SIZE ? DEFAULT_BUFFER_SIZE : dataLength; 
+//        		CodedOutputStream.computePreferredBufferSize(
+//            CodedOutputStream.computeRawVarint32Size(serialized) + serialized);
+        final CodedOutputStream codedOutput =
+            CodedOutputStream.newInstance(output, bufferSize);
+        codedOutput.writeRawVarint32(serialized);
+        writeTo(codedOutput, sample);
+        codedOutput.flush();
     }
 
     @Override
