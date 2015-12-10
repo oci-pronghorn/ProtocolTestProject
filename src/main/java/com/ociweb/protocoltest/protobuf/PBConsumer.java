@@ -1,4 +1,4 @@
-package com.ociweb.protocoltest;
+package com.ociweb.protocoltest.protobuf;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,16 +13,16 @@ import com.ociweb.protocoltest.data.SequenceExampleA;
 import com.ociweb.protocoltest.data.SequenceExampleAFactory;
 import com.ociweb.protocoltest.data.SequenceExampleASample;
 import com.ociweb.protocoltest.data.build.SequenceExampleAFuzzGenerator;
-import com.ociweb.protocoltest.PBMessageProvider.PBQuery;
-import com.ociweb.protocoltest.PBMessageProvider.PBQuery.PBSample;
-public class Consumer implements Runnable {
+import com.ociweb.protocoltest.protobuf.PBQueryProvider.PBQuery;
+import com.ociweb.protocoltest.protobuf.PBQueryProvider.PBQuery.PBSample;
+public class PBConsumer implements Runnable {
 
-    private static final Logger log = LoggerFactory.getLogger(Consumer.class);
+    private static final Logger log = LoggerFactory.getLogger(PBConsumer.class);
     private final StreamRegulator regulator;
     private final int count;
     private final Histogram histogram;
 
-    public Consumer(StreamRegulator regulator, int count, Histogram histogram) {
+    public PBConsumer(StreamRegulator regulator, int count, Histogram histogram) {
         this.regulator = regulator;
         this.count = count;
         this.histogram = histogram;
@@ -85,12 +85,12 @@ public class Consumer implements Runnable {
                     }
 
                 }
-                Thread.yield(); //Only happens when the pipe is empty and there is nothing to read, eg consumer is faster than producer.
+                Thread.yield(); //Only happens when the pipe is empty and there is nothing to read, eg PBConsumer is faster than producer.
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        log.info("consumer finished");
+        log.info("PBConsumer finished");
     }
 
 }

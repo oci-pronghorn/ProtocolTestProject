@@ -2,8 +2,8 @@
 
 package pbexample;
 
-option java_package = "com.ociweb.protocoltest";
-option java_outer_classname = "PBMessageProvider";
+option java_package = "com.ociweb.protocoltest.protobuf";
+option java_outer_classname = "PBQueryProvider";
 
 //optimize_for (file option):
 //Can be set to SPEED, CODE_SIZE, or LITE_RUNTIME
