@@ -14,7 +14,7 @@ message PBQuery {
   optional int32 year = 2;
   optional int32 month = 3;
   optional int32 date = 4;
-  optional int32 sampleCount = 5;
+  optional int32 sample_count = 5;
 
   message PBSample {
     optional int32 id = 1;
