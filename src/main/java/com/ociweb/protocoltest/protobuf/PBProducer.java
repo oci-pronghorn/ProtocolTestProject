@@ -1,4 +1,4 @@
-package com.ociweb.protocoltest;
+package com.ociweb.protocoltest.protobuf;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -7,20 +7,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ociweb.pronghorn.pipe.util.StreamRegulator;
-import com.ociweb.protocoltest.PBMessageProvider.PBQuery;
 import com.ociweb.protocoltest.data.SequenceExampleA;
 import com.ociweb.protocoltest.data.SequenceExampleAFactory;
 import com.ociweb.protocoltest.data.SequenceExampleASample;
 import com.ociweb.protocoltest.data.build.SequenceExampleAFuzzGenerator;
+import com.ociweb.protocoltest.protobuf.PBQueryProvider.PBQuery;
 
-public class Producer implements Runnable {
+public class PBProducer implements Runnable {
 
-    private static final Logger log = LoggerFactory.getLogger(Producer.class);
+    private static final Logger log = LoggerFactory.getLogger(PBProducer.class);
 
     private final StreamRegulator regulator;
     private final int count;
 
-    public Producer(StreamRegulator regulator, int count) {
+    public PBProducer(StreamRegulator regulator, int count) {
         this.regulator = regulator;
         this.count = count;
     }
@@ -77,6 +77,6 @@ public class Producer implements Runnable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        log.info("producer finished");
+        log.info("PBProducer finished");
     }
 }

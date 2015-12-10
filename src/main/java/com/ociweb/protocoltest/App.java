@@ -13,6 +13,8 @@ import com.ociweb.pronghorn.util.CPUMonitor;
 import com.ociweb.protocoltest.data.SequenceExampleA;
 import com.ociweb.protocoltest.data.SequenceExampleAFactory;
 import com.ociweb.protocoltest.data.build.SequenceExampleAFuzzGenerator;
+import com.ociweb.protocoltest.protobuf.PBConsumer;
+import com.ociweb.protocoltest.protobuf.PBProducer;
 
 public class App {
 
@@ -44,8 +46,8 @@ public class App {
         
         ExecutorService executor = Executors.newFixedThreadPool(2);
         
-        Runnable p = new Producer(regulator, totalMessageCount);
-        Runnable c = new Consumer(regulator, totalMessageCount, histogram);
+        Runnable p = new PBProducer(regulator, totalMessageCount);
+        Runnable c = new PBConsumer(regulator, totalMessageCount, histogram);
            
         long startTime = System.currentTimeMillis();
         
