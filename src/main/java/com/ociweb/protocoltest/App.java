@@ -71,7 +71,7 @@ public class App {
         long bitsSent = totalBytesSent * 8L;
         float mBitsPerSec = (1000L*bitsSent)/(float)(durationInMs*1024*1024); 
         float kBitsPerSec = (1000L*bitsSent)/(float)(durationInMs*1024); 
-        
+        long kmsgPerSec = totalMessageCount/durationInMs;
         
         System.out.println("Latency Value in microseconds");
         histogram.outputPercentileDistribution(System.out, 1000.0);
@@ -80,6 +80,7 @@ public class App {
         System.out.println("Process CPU Usage (All threads started by this Java instance)");
         cpuHist.outputPercentileDistribution(System.out, CPUMonitor.UNIT_SCALING_RATIO);
         
+        log.info("K Mgs Per Second {}",kmsgPerSec);
         log.info("Total duration {}ms",durationInMs);
         log.info("TotalBytes {}",totalBytesSent);
         
