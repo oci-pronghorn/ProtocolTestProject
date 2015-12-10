@@ -32,7 +32,8 @@ public class Producer implements Runnable {
             OutputStream out = regulator.getOutputStream();
 
             SequenceExampleAFactory testDataFactory = new SequenceExampleAFuzzGenerator();
-
+            PBQuery.Builder query_builder = PBQuery.newBuilder();
+            PBQuery.PBSample.Builder sample_builder = PBQuery.PBSample.newBuilder();
             int i = count;
             while (i>0) {
                 while (regulator.hasRoomForChunk() && --i>=0) { //Note we are only dec when there is room for write
@@ -47,15 +48,14 @@ public class Producer implements Runnable {
                     //NOTE: this is how objects are fetched for writing.
                     SequenceExampleA writeMe = testDataFactory.nextObject();
 
-                    PBQuery.Builder query = PBQuery.newBuilder()
-                        .setUser(writeMe.getUser())
+                        query_builder.setUser(writeMe.getUser())
                         .setYear(writeMe.getYear())
                         .setMonth(writeMe.getMonth())
                         .setDate(writeMe.getDate())
                         .setSampleCount(writeMe.getSampleCount());
 
                     for (SequenceExampleASample sample : writeMe.getSamples()) {
-                        query.addSamples(PBQuery.PBSample.newBuilder()
+                        query_builder.addSamples(sample_builder
                             .setId(sample.getId())
                             //TODO: Currently time in sample is incorrect when comparing with
                             //System.nanoTime in consumer.  Need to use same time standard.
@@ -64,10 +64,11 @@ public class Producer implements Runnable {
                             .setMeasurement(sample.getMeasurement())
                             .setAction(sample.getAction())
                             .build());
+                        sample_builder.clear();
                     }
 
-                    query.build().writeDelimitedTo(out);
-
+                    query_builder.build().writeDelimitedTo(out);
+                    query_builder.clear();
                 }
                 Thread.yield(); //we are faster than the consumer
             }
