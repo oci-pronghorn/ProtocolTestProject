@@ -2,6 +2,7 @@ package com.ociweb.protocoltest;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import org.HdrHistogram.Histogram;
 import org.slf4j.Logger;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.ociweb.pronghorn.pipe.util.StreamRegulator;
 import com.ociweb.protocoltest.data.SequenceExampleA;
 import com.ociweb.protocoltest.data.SequenceExampleAFactory;
+import com.ociweb.protocoltest.data.SequenceExampleASample;
 import com.ociweb.protocoltest.data.build.SequenceExampleAFuzzGenerator;
 import com.ociweb.protocoltest.PBMessageProvider.PBQuery;
 import com.ociweb.protocoltest.PBMessageProvider.PBQuery.PBSample;
@@ -26,7 +28,7 @@ public class Consumer implements Runnable {
         this.histogram = histogram;
     }
 
-    public boolean compareSamples(PBQuery query, SequenceExampleA sample) {
+    private boolean compareSamples(PBQuery query, SequenceExampleA sample) {
         if (query.getUser() != sample.getUser() ||
             query.getYear() != sample.getYear() ||
             query.getMonth() != sample.getMonth() ||
@@ -34,19 +36,21 @@ public class Consumer implements Runnable {
             query.getSampleCount() != sample.getSampleCount()) {
             throw new RuntimeException("Received: "+query+"\nExpecting: "+sample);
         }
-        if (query.getSamplesList().size() != sample.getSamples().size() ||
-            query.getSampleCount() != query.getSamplesList().size()) {
+        List<PBSample> localSamples = query.getSamplesList();
+        List<SequenceExampleASample> localSequenceSamples = sample.getSamples();
+        if (localSamples.size() != localSequenceSamples.size() ||
+            query.getSampleCount() != localSamples.size()) {
             throw new RuntimeException("SampleCount: "+query.getSampleCount()
-                                       +"\nQuery List Size: "+query.getSamplesList().size()
-                                       +"\nGenerated List Size: "+sample.getSamples().size());
+                                       +"\nQuery List Size: "+localSamples.size()
+                                       +"\nGenerated List Size: "+localSequenceSamples.size());
         }
-        for (int x = 0; x < query.getSamplesList().size(); ++x) {
-            if (query.getSamples(x).getId() != sample.getSamples().get(x).getId() ||
-                query.getSamples(x).getMeasurement() != sample.getSamples().get(x).getMeasurement() ||
-                query.getSamples(x).getAction() != sample.getSamples().get(x).getAction()) {
-                    throw new RuntimeException("Received Id: "+query.getSamples(x).getId()+" Expected Id: "+sample.getSamples().get(x).getId()
-                        +"\nReceived Measurement: "+query.getSamples(x).getMeasurement()+" Expected Measurement: "+sample.getSamples().get(x).getMeasurement()
-                        +"\nReceived Action: "+query.getSamples(x).getAction()+" Expected Action: "+sample.getSamples().get(x).getAction());
+        for (int x = 0; x < localSamples.size(); ++x) {
+            if (localSamples.get(x).getId() != localSequenceSamples.get(x).getId() ||
+                localSamples.get(x).getMeasurement() != localSequenceSamples.get(x).getMeasurement() ||
+                localSamples.get(x).getAction() != localSequenceSamples.get(x).getAction()) {
+                    throw new RuntimeException("Received Id: "+localSamples.get(x).getId()+" Expected Id: "+localSequenceSamples.get(x).getId()
+                        +"\nReceived Measurement: "+localSamples.get(x).getMeasurement()+" Expected Measurement: "+localSequenceSamples.get(x).getMeasurement()
+                        +"\nReceived Action: "+localSamples.get(x).getAction()+" Expected Action: "+localSequenceSamples.get(x).getAction());
             }
         }
         return true;
