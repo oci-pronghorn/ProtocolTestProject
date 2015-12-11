@@ -8,10 +8,10 @@ public final class PBSizeQueryProvider {
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
   }
-  public interface PBQueryOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:pb_size.PBQuery)
-      com.google.protobuf.MessageOrBuilder {
+  public interface PBQueryOrBuilder
+      extends com.google.protobuf.MessageOrBuilder {
 
+    // optional int32 user = 1;
     /**
      * <code>optional int32 user = 1;</code>
      */
@@ -21,6 +21,7 @@ public final class PBSizeQueryProvider {
      */
     int getUser();
 
+    // optional int32 year = 2;
     /**
      * <code>optional int32 year = 2;</code>
      */
@@ -30,6 +31,7 @@ public final class PBSizeQueryProvider {
      */
     int getYear();
 
+    // optional int32 month = 3;
     /**
      * <code>optional int32 month = 3;</code>
      */
@@ -39,6 +41,7 @@ public final class PBSizeQueryProvider {
      */
     int getMonth();
 
+    // optional int32 date = 4;
     /**
      * <code>optional int32 date = 4;</code>
      */
@@ -48,6 +51,7 @@ public final class PBSizeQueryProvider {
      */
     int getDate();
 
+    // optional int32 sample_count = 5;
     /**
      * <code>optional int32 sample_count = 5;</code>
      */
@@ -57,6 +61,7 @@ public final class PBSizeQueryProvider {
      */
     int getSampleCount();
 
+    // repeated .pb_size.PBQuery.PBSample samples = 6;
     /**
      * <code>repeated .pb_size.PBQuery.PBSample samples = 6;</code>
      */
@@ -85,9 +90,8 @@ public final class PBSizeQueryProvider {
    * Protobuf type {@code pb_size.PBQuery}
    */
   public static final class PBQuery extends
-      com.google.protobuf.GeneratedMessage implements
-      // @@protoc_insertion_point(message_implements:pb_size.PBQuery)
-      PBQueryOrBuilder {
+      com.google.protobuf.GeneratedMessage
+      implements PBQueryOrBuilder {
     // Use PBQuery.newBuilder() to construct.
     private PBQuery(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
@@ -146,10 +150,10 @@ public final class PBSizeQueryProvider {
       return PARSER;
     }
 
-    public interface PBSampleOrBuilder extends
-        // @@protoc_insertion_point(interface_extends:pb_size.PBQuery.PBSample)
-        com.google.protobuf.MessageOrBuilder {
+    public interface PBSampleOrBuilder
+        extends com.google.protobuf.MessageOrBuilder {
 
+      // optional int32 id = 1;
       /**
        * <code>optional int32 id = 1;</code>
        */
@@ -159,6 +163,7 @@ public final class PBSizeQueryProvider {
        */
       int getId();
 
+      // optional int64 time = 2;
       /**
        * <code>optional int64 time = 2;</code>
        */
@@ -168,6 +173,7 @@ public final class PBSizeQueryProvider {
        */
       long getTime();
 
+      // optional int32 measurement = 3;
       /**
        * <code>optional int32 measurement = 3;</code>
        */
@@ -177,6 +183,7 @@ public final class PBSizeQueryProvider {
        */
       int getMeasurement();
 
+      // optional int32 action = 4;
       /**
        * <code>optional int32 action = 4;</code>
        */
@@ -190,9 +197,8 @@ public final class PBSizeQueryProvider {
      * Protobuf type {@code pb_size.PBQuery.PBSample}
      */
     public static final class PBSample extends
-        com.google.protobuf.GeneratedMessage implements
-        // @@protoc_insertion_point(message_implements:pb_size.PBQuery.PBSample)
-        PBSampleOrBuilder {
+        com.google.protobuf.GeneratedMessage
+        implements PBSampleOrBuilder {
       // Use PBSample.newBuilder() to construct.
       private PBSample(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
         super(builder);
@@ -252,6 +258,7 @@ public final class PBSizeQueryProvider {
       }
 
       private int bitField0_;
+      // optional int32 id = 1;
       public static final int ID_FIELD_NUMBER = 1;
       private int id_;
       /**
@@ -267,6 +274,7 @@ public final class PBSizeQueryProvider {
         return id_;
       }
 
+      // optional int64 time = 2;
       public static final int TIME_FIELD_NUMBER = 2;
       private long time_;
       /**
@@ -282,6 +290,7 @@ public final class PBSizeQueryProvider {
         return time_;
       }
 
+      // optional int32 measurement = 3;
       public static final int MEASUREMENT_FIELD_NUMBER = 3;
       private int measurement_;
       /**
@@ -297,6 +306,7 @@ public final class PBSizeQueryProvider {
         return measurement_;
       }
 
+      // optional int32 action = 4;
       public static final int ACTION_FIELD_NUMBER = 4;
       private int action_;
       /**
@@ -388,9 +398,8 @@ public final class PBSizeQueryProvider {
        * Protobuf type {@code pb_size.PBQuery.PBSample}
        */
       public static final class Builder extends
-          com.google.protobuf.GeneratedMessage.Builder<Builder> implements
-          // @@protoc_insertion_point(builder_implements:pb_size.PBQuery.PBSample)
-          com.ociweb.protocoltest.protobuf.size.PBSizeQueryProvider.PBQuery.PBSampleOrBuilder {
+          com.google.protobuf.GeneratedMessage.Builder<Builder>
+         implements com.ociweb.protocoltest.protobuf.size.PBSizeQueryProvider.PBQuery.PBSampleOrBuilder {
         public static final com.google.protobuf.Descriptors.Descriptor
             getDescriptor() {
           return com.ociweb.protocoltest.protobuf.size.PBSizeQueryProvider.internal_static_pb_size_PBQuery_PBSample_descriptor;
@@ -482,6 +491,7 @@ public final class PBSizeQueryProvider {
 
         private int bitField0_;
 
+        // optional int32 id = 1;
         private int id_ ;
         /**
          * <code>optional int32 id = 1;</code>
@@ -514,6 +524,7 @@ public final class PBSizeQueryProvider {
           return this;
         }
 
+        // optional int64 time = 2;
         private long time_ ;
         /**
          * <code>optional int64 time = 2;</code>
@@ -546,6 +557,7 @@ public final class PBSizeQueryProvider {
           return this;
         }
 
+        // optional int32 measurement = 3;
         private int measurement_ ;
         /**
          * <code>optional int32 measurement = 3;</code>
@@ -578,6 +590,7 @@ public final class PBSizeQueryProvider {
           return this;
         }
 
+        // optional int32 action = 4;
         private int action_ ;
         /**
          * <code>optional int32 action = 4;</code>
@@ -622,6 +635,7 @@ public final class PBSizeQueryProvider {
     }
 
     private int bitField0_;
+    // optional int32 user = 1;
     public static final int USER_FIELD_NUMBER = 1;
     private int user_;
     /**
@@ -637,6 +651,7 @@ public final class PBSizeQueryProvider {
       return user_;
     }
 
+    // optional int32 year = 2;
     public static final int YEAR_FIELD_NUMBER = 2;
     private int year_;
     /**
@@ -652,6 +667,7 @@ public final class PBSizeQueryProvider {
       return year_;
     }
 
+    // optional int32 month = 3;
     public static final int MONTH_FIELD_NUMBER = 3;
     private int month_;
     /**
@@ -667,6 +683,7 @@ public final class PBSizeQueryProvider {
       return month_;
     }
 
+    // optional int32 date = 4;
     public static final int DATE_FIELD_NUMBER = 4;
     private int date_;
     /**
@@ -682,6 +699,7 @@ public final class PBSizeQueryProvider {
       return date_;
     }
 
+    // optional int32 sample_count = 5;
     public static final int SAMPLE_COUNT_FIELD_NUMBER = 5;
     private int sampleCount_;
     /**
@@ -697,6 +715,7 @@ public final class PBSizeQueryProvider {
       return sampleCount_;
     }
 
+    // repeated .pb_size.PBQuery.PBSample samples = 6;
     public static final int SAMPLES_FIELD_NUMBER = 6;
     private java.util.List<com.ociweb.protocoltest.protobuf.size.PBSizeQueryProvider.PBQuery.PBSample> samples_;
     /**
@@ -810,9 +829,8 @@ public final class PBSizeQueryProvider {
      * Protobuf type {@code pb_size.PBQuery}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessage.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:pb_size.PBQuery)
-        com.ociweb.protocoltest.protobuf.size.PBSizeQueryProvider.PBQueryOrBuilder {
+        com.google.protobuf.GeneratedMessage.Builder<Builder>
+       implements com.ociweb.protocoltest.protobuf.size.PBSizeQueryProvider.PBQueryOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
         return com.ociweb.protocoltest.protobuf.size.PBSizeQueryProvider.internal_static_pb_size_PBQuery_descriptor;
@@ -926,6 +944,7 @@ public final class PBSizeQueryProvider {
 
       private int bitField0_;
 
+      // optional int32 user = 1;
       private int user_ ;
       /**
        * <code>optional int32 user = 1;</code>
@@ -958,6 +977,7 @@ public final class PBSizeQueryProvider {
         return this;
       }
 
+      // optional int32 year = 2;
       private int year_ ;
       /**
        * <code>optional int32 year = 2;</code>
@@ -990,6 +1010,7 @@ public final class PBSizeQueryProvider {
         return this;
       }
 
+      // optional int32 month = 3;
       private int month_ ;
       /**
        * <code>optional int32 month = 3;</code>
@@ -1022,6 +1043,7 @@ public final class PBSizeQueryProvider {
         return this;
       }
 
+      // optional int32 date = 4;
       private int date_ ;
       /**
        * <code>optional int32 date = 4;</code>
@@ -1054,6 +1076,7 @@ public final class PBSizeQueryProvider {
         return this;
       }
 
+      // optional int32 sample_count = 5;
       private int sampleCount_ ;
       /**
        * <code>optional int32 sample_count = 5;</code>
@@ -1086,6 +1109,7 @@ public final class PBSizeQueryProvider {
         return this;
       }
 
+      // repeated .pb_size.PBQuery.PBSample samples = 6;
       private java.util.List<com.ociweb.protocoltest.protobuf.size.PBSizeQueryProvider.PBQuery.PBSample> samples_ =
         java.util.Collections.emptyList();
       private void ensureSamplesIsMutable() {
@@ -1227,8 +1251,7 @@ public final class PBSizeQueryProvider {
           java.lang.Iterable<? extends com.ociweb.protocoltest.protobuf.size.PBSizeQueryProvider.PBQuery.PBSample> values) {
         if (samplesBuilder_ == null) {
           ensureSamplesIsMutable();
-          com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, samples_);
+          super.addAll(values, samples_);
           onChanged();
         } else {
           samplesBuilder_.addAllMessages(values);
@@ -1337,12 +1360,12 @@ public final class PBSizeQueryProvider {
     // @@protoc_insertion_point(class_scope:pb_size.PBQuery)
   }
 
-  private static final com.google.protobuf.Descriptors.Descriptor
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_pb_size_PBQuery_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_pb_size_PBQuery_fieldAccessorTable;
-  private static final com.google.protobuf.Descriptors.Descriptor
+  private static com.google.protobuf.Descriptors.Descriptor
     internal_static_pb_size_PBQuery_PBSample_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -1366,29 +1389,29 @@ public final class PBSizeQueryProvider {
       "est.protobuf.sizeB\023PBSizeQueryProviderH\002"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
-          public com.google.protobuf.ExtensionRegistry assignDescriptors(
-              com.google.protobuf.Descriptors.FileDescriptor root) {
-            descriptor = root;
-            return null;
-          }
-        };
+      new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
+        public com.google.protobuf.ExtensionRegistry assignDescriptors(
+            com.google.protobuf.Descriptors.FileDescriptor root) {
+          descriptor = root;
+          internal_static_pb_size_PBQuery_descriptor =
+            getDescriptor().getMessageTypes().get(0);
+          internal_static_pb_size_PBQuery_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_pb_size_PBQuery_descriptor,
+              new java.lang.String[] { "User", "Year", "Month", "Date", "SampleCount", "Samples", });
+          internal_static_pb_size_PBQuery_PBSample_descriptor =
+            internal_static_pb_size_PBQuery_descriptor.getNestedTypes().get(0);
+          internal_static_pb_size_PBQuery_PBSample_fieldAccessorTable = new
+            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+              internal_static_pb_size_PBQuery_PBSample_descriptor,
+              new java.lang.String[] { "Id", "Time", "Measurement", "Action", });
+          return null;
+        }
+      };
     com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
         }, assigner);
-    internal_static_pb_size_PBQuery_descriptor =
-      getDescriptor().getMessageTypes().get(0);
-    internal_static_pb_size_PBQuery_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_pb_size_PBQuery_descriptor,
-        new java.lang.String[] { "User", "Year", "Month", "Date", "SampleCount", "Samples", });
-    internal_static_pb_size_PBQuery_PBSample_descriptor =
-      internal_static_pb_size_PBQuery_descriptor.getNestedTypes().get(0);
-    internal_static_pb_size_PBQuery_PBSample_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_pb_size_PBQuery_PBSample_descriptor,
-        new java.lang.String[] { "Id", "Time", "Measurement", "Action", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

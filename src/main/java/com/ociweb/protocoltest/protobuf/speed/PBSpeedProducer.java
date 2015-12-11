@@ -47,9 +47,7 @@ public class PBSpeedProducer implements Runnable {
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(1, sample.getId());
         size += com.google.protobuf.CodedOutputStream
-                .computeInt64Size(2, System.nanoTime());
-//        size += com.google.protobuf.CodedOutputStream
-//          .computeInt64Size(2, sample.getTime());
+          .computeInt64Size(2, sample.getTime());
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(3, sample.getMeasurement());
         size += com.google.protobuf.CodedOutputStream
@@ -89,8 +87,7 @@ public class PBSpeedProducer implements Runnable {
     public void writeTo(com.google.protobuf.CodedOutputStream output, final SequenceExampleASample sample)
             throws java.io.IOException {
         output.writeInt32(1, sample.getId());
-        output.writeInt64(2, System.nanoTime());
-//        output.writeInt64(2, sample.getTime());
+        output.writeInt64(2, sample.getTime());
         output.writeInt32(3, sample.getMeasurement());
         output.writeInt32(4, sample.getAction());
     }
