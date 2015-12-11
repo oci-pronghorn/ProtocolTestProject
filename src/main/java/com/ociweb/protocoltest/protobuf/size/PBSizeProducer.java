@@ -1,8 +1,7 @@
-package com.ociweb.protocoltest.protobuf;
+package com.ociweb.protocoltest.protobuf.size;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,20 +13,20 @@ import com.ociweb.protocoltest.data.SequenceExampleA;
 import com.ociweb.protocoltest.data.SequenceExampleAFactory;
 import com.ociweb.protocoltest.data.SequenceExampleASample;
 import com.ociweb.protocoltest.data.build.SequenceExampleAFuzzGenerator;
-import com.ociweb.protocoltest.protobuf.PBQueryProvider.PBQuery;
+import com.ociweb.protocoltest.protobuf.size.PBSizeQueryProvider.PBQuery;
 
-public class PBProducer implements Runnable {
+public class PBSizeProducer implements Runnable {
 
-    private static final Logger log = LoggerFactory.getLogger(PBProducer.class);
+    private static final Logger log = LoggerFactory.getLogger(PBSizeProducer.class);
 
     private final StreamRegulator regulator;
     private final int count;
 
-    public PBProducer(StreamRegulator regulator, int count) {
+    public PBSizeProducer(StreamRegulator regulator, int count) {
         this.regulator = regulator;
         this.count = count;
     }
-
+    
     @Override
     public void run() {
         try {
@@ -45,7 +44,6 @@ public class PBProducer implements Runnable {
 
                     //NOTE: this is how objects are fetched for writing.
                     SequenceExampleA writeMe = testDataFactory.nextObject();
-
                         query_builder.setUser(writeMe.getUser())
                         .setYear(writeMe.getYear())
                         .setMonth(writeMe.getMonth())
@@ -63,6 +61,9 @@ public class PBProducer implements Runnable {
                     }
 
                     query_builder.build().writeDelimitedTo(out);
+//                    query_builder.build().writeTo(out);
+//                    out.close();
+
                     query_builder.clear();
                     
                     lastNow = App.recordSentTime(lastNow, blobWriter);
@@ -76,6 +77,6 @@ public class PBProducer implements Runnable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        log.info("PBProducer finished");
+        log.info("PBSizeProducer finished");
     }
 }
