@@ -77,8 +77,8 @@ public class PBSizeConsumer implements Runnable {
             
             DataInputBlobReader<RawDataSchema> blobReader = regulator.getBlobReader();
             long lastNow = 0;
-            
-            
+
+
             int i = count;
             while (i>0) {
                 while (regulator.hasNextChunk() && --i>=0) {
