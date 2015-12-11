@@ -34,6 +34,8 @@ public class App {
 
     public static void main(String[] args) {
 
+        String destinationIp = getOptArg("-destination","-d", args, "127.0.0.1");
+        
         log.info("Hello World, we are running...");
 
 //        SequenceExampleAFactory testDataFactory = new SequenceExampleAFuzzGenerator();
@@ -117,6 +119,30 @@ public class App {
 
         log.info("{} Kbps",kBitsPerSec);
         log.info("{} Mbps",mBitsPerSec);
+    }
+    
+    private static String getOptArg(String longName, String shortName, String[] args, String defaultValue) {
+        
+        String prev = null;
+        for (String token : args) {
+            if (longName.equals(prev) || shortName.equals(prev)) {
+                if (token == null || token.trim().length() == 0 || token.startsWith("-")) {
+                    return defaultValue;
+                }
+                return reportChoice(longName, shortName, token.trim());
+            }
+            prev = token;
+        }
+        return reportChoice(longName, shortName, defaultValue);
+    }
+    
+    private static String reportChoice(final String longName, final String shortName, final String value) {
+        System.out.print(longName);
+        System.out.print(" ");
+        System.out.print(shortName);
+        System.out.print(" ");
+        System.out.println(value);
+        return value;
     }
     
     public static long recordSentTime(long lastNow, DataOutputBlobWriter<RawDataSchema> writer) {
