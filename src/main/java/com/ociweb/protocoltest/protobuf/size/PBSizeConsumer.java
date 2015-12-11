@@ -57,6 +57,7 @@ public class PBSizeConsumer implements Runnable {
         }
         for (int x = 0; x < localSamples.size(); ++x) {
             if (localSamples.get(x).getId() != localSequenceSamples.get(x).getId() ||
+                localSamples.get(x).getTime() != localSequenceSamples.get(x).getTime() ||
                 localSamples.get(x).getMeasurement() != localSequenceSamples.get(x).getMeasurement() ||
                 localSamples.get(x).getAction() != localSequenceSamples.get(x).getAction()) {
             	System.out.println("Failed on received sample: "+countSamplesReceived);
