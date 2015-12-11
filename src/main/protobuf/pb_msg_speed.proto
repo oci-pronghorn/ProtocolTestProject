@@ -1,9 +1,9 @@
 // See README.txt for information and build instructions.
 
-package pbexample;
+package pb_speed;
 
-option java_package = "com.ociweb.protocoltest.protobuf";
-option java_outer_classname = "PBQueryProvider";
+option java_package = "com.ociweb.protocoltest.protobuf.speed";
+option java_outer_classname = "PBSpeedQueryProvider";
 
 //optimize_for (file option):
 //Can be set to SPEED, CODE_SIZE, or LITE_RUNTIME
@@ -26,6 +26,6 @@ message PBQuery {
   repeated PBSample samples = 6;
 }
 
-//message PBQueryProvider {
+//message PBSpeedQueryProvider {
 //  repeated PBQuery queries = 1;
 //}
