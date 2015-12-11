@@ -8,7 +8,10 @@ import org.HdrHistogram.Histogram;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ociweb.pronghorn.pipe.DataInputBlobReader;
+import com.ociweb.pronghorn.pipe.RawDataSchema;
 import com.ociweb.pronghorn.pipe.util.StreamRegulator;
+import com.ociweb.protocoltest.App;
 import com.ociweb.protocoltest.data.SequenceExampleA;
 import com.ociweb.protocoltest.data.SequenceExampleAFactory;
 import com.ociweb.protocoltest.data.SequenceExampleASample;
@@ -71,7 +74,11 @@ public class PBSizeConsumer implements Runnable {
 
             InputStream in = regulator.getInputStream();
             SequenceExampleAFactory testDataFactory = new SequenceExampleAFuzzGenerator();
-
+            
+            DataInputBlobReader<RawDataSchema> blobReader = regulator.getBlobReader();
+            long lastNow = 0;
+            
+            
             int i = count;
             while (i>0) {
                 while (regulator.hasNextChunk() && --i>=0) {
@@ -80,20 +87,12 @@ public class PBSizeConsumer implements Runnable {
 //                    PBQuery query = PBQuery.parseFrom(in);
                     PBQuery query = PBQuery.parseDelimitedFrom(in);
 
-                    //At this point the message has been decoded, so use this time for latency calcs
-                    long now = System.nanoTime();
-
                     SequenceExampleA compareToMe = testDataFactory.nextObject();
 
                     compareSamples(query, compareToMe);
-
-                    for(PBSample pbsample : query.getSamplesList()) {
-                        //Note after the message is decoded the latency for the message must be computed using.
-                        long latency = now - pbsample.getTime();
-                        if (latency>=0) {//conditional to protect against numerical overflow, see docs on nanoTime();
-                            histogram.recordValue(latency);
-                        }
-                    }
+                    
+                    lastNow= App.recordLatency(lastNow, histogram, blobReader);
+                    
 
                 }
                 Thread.yield(); //Only happens when the pipe is empty and there is nothing to read, eg PBSizeConsumer is faster than producer.
