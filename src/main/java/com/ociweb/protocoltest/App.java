@@ -8,6 +8,9 @@ import org.HdrHistogram.Histogram;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ociweb.pronghorn.pipe.DataInputBlobReader;
+import com.ociweb.pronghorn.pipe.DataOutputBlobWriter;
+import com.ociweb.pronghorn.pipe.RawDataSchema;
 import com.ociweb.pronghorn.pipe.util.StreamRegulator;
 import com.ociweb.pronghorn.util.CPUMonitor;
 import com.ociweb.protocoltest.data.SequenceExampleA;
@@ -90,5 +93,26 @@ public class App {
         log.info("{} Mbps",mBitsPerSec);
     }
     
+    public static long recordSentTime(long lastNow, DataOutputBlobWriter<RawDataSchema> writer) {
+        long now = System.nanoTime();
+        if (now < lastNow) {//defend against the case that this is not "real" time and can move backwards.
+            now = lastNow;
+        }
+        writer.writePackedLong(now-lastNow);                       
+        return now;
+    }
+
+    public static long recordLatency(long lastNow, Histogram h, DataInputBlobReader<RawDataSchema> reader) {
+        long timeMessageWasSentDelta = reader.readPackedLong();
+        
+        lastNow += timeMessageWasSentDelta;                            
+        //Note after the message is decoded the latency for the message must be computed using.
+        
+        long latency = System.nanoTime() - lastNow;
+        if (latency>=0 && 0!=lastNow) {//conditional to protect against numerical overflow, see docs on nanoTime();
+            h.recordValue(latency);
+        }
+        return lastNow;
+    }
 
 }
