@@ -152,6 +152,8 @@ public class PBSpeedProducer implements Runnable {
             while (i>0) {
                 while (regulator.hasRoomForChunk() && --i>=0) { //Note we are only dec when there is room for write
 
+                    lastNow = App.recordSentTime(lastNow, blobWriter);
+                    
                     //NOTE: this is how objects are fetched for writing.
                     SequenceExampleA writeMe = testDataFactory.nextObject();
                     switch (runType) {
@@ -179,15 +181,15 @@ public class PBSpeedProducer implements Runnable {
                             sample_builder.clear();
                         }
 
-//                        query_builder.build();
-//                        System.out.println("Query: "+query_builder.getUser()+" serializedSize: "+query_builder.build().getSerializedSize());
+                 //       query_builder.build();
+                 //       System.out.println("Query: "+query_builder.getUser()+" serializedSize: "+query_builder.build().getSerializedSize());
 //
 //                        query_builder.build().writeDelimitedTo(out);
                         query_builder.build().writeTo(out);
+                        out.close();
 
                         query_builder.clear();
                     }
-                    lastNow = App.recordSentTime(lastNow, blobWriter);
 
                 }
                 Thread.yield(); //we are faster than the consumer

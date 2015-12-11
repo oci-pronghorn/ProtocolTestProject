@@ -43,7 +43,7 @@ public class App {
         
         
         
-        int totalMessageCount = 100000; //large fixed value for running the test
+        int totalMessageCount = 1000; //large fixed value for running the test
         Histogram histogram = new Histogram(3600000000000L, 3);
         
         long termination_wait = 240; //Seconds to wait for test to complete

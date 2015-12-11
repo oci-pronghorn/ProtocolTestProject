@@ -83,6 +83,7 @@ public class PBSpeedConsumer implements Runnable {
             while (i>0) {
                 while (regulator.hasNextChunk() && --i>=0) {
                     //use something to read the data from the input stream
+                    lastNow= App.recordLatency(lastNow, histogram, blobReader);
 
                     PBQuery query = PBQuery.parseFrom(in);
 //                    PBQuery query = PBQuery.parseDelimitedFrom(in);
@@ -91,7 +92,6 @@ public class PBSpeedConsumer implements Runnable {
 
                     compareSamples(query, compareToMe);
 
-                    lastNow= App.recordLatency(lastNow, histogram, blobReader);
 
                 }
                 Thread.yield(); //Only happens when the pipe is empty and there is nothing to read, eg PBSpeedConsumer is faster than producer.
