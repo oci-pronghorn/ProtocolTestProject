@@ -13,10 +13,14 @@ import com.ociweb.pronghorn.pipe.DataOutputBlobWriter;
 import com.ociweb.pronghorn.pipe.RawDataSchema;
 import com.ociweb.pronghorn.pipe.util.StreamRegulator;
 import com.ociweb.pronghorn.util.CPUMonitor;
+import com.ociweb.protocoltest.avro.AvroConsumer;
+import com.ociweb.protocoltest.avro.AvroProducer;
 import com.ociweb.protocoltest.data.SequenceExampleA;
 import com.ociweb.protocoltest.data.SequenceExampleAFactory;
 import com.ociweb.protocoltest.data.build.SequenceExampleAFuzzGenerator;
 import com.ociweb.protocoltest.speedTest.*;
+import com.ociweb.protocoltest.template.EmptyConsumer;
+import com.ociweb.protocoltest.template.EmptyProducer;
 import com.ociweb.protocoltest.protobuf.speed.PBSpeedConsumer;
 import com.ociweb.protocoltest.protobuf.speed.PBSpeedProducer;
 import com.ociweb.protocoltest.protobuf.size.PBSizeConsumer;
@@ -28,8 +32,10 @@ public class App {
     private static final Logger log = LoggerFactory.getLogger(App.class);
 
     public enum TestType {
+        Empty,
         PBSpeed,
-        PBSize
+        PBSize,
+        Avro
     }
 
     public static void main(String[] args) {
@@ -45,13 +51,12 @@ public class App {
         
         
         
-        int totalMessageCount = 1000; //large fixed value for running the test
         Histogram histogram = new Histogram(3600000000000L, 3);
         
         long termination_wait = 240; //Seconds to wait for test to complete
         
         long bitPerSecond = 100L*1024L*1024L*1024L;
-        int maxWrittenChunksInFlight = 10;
+        int maxWrittenChunksInFlight = 100;
         int maxWrittenChunkSizeInBytes= 50*1024;
         StreamRegulator regulator = new StreamRegulator(bitPerSecond, maxWrittenChunksInFlight, maxWrittenChunkSizeInBytes);
 
@@ -61,22 +66,30 @@ public class App {
 
         Runnable p,c;
 
-        TestType type = TestType.PBSpeed;
+        int totalMessageCount = 100000; //large fixed value for running the test
+        TestType type = TestType.Empty;
         switch (type) {
-        case PBSize:
-            System.out.println("Running Protobuf Size Test");
-            p = new PBSizeProducer(regulator, totalMessageCount);
-            c = new PBSizeConsumer(regulator, totalMessageCount, histogram);
-            break;
-        case PBSpeed:
-            System.out.println("Running Protobuf Speed Test");
-            p = new PBSpeedProducer(regulator, totalMessageCount);
-            c = new PBSpeedConsumer(regulator, totalMessageCount, histogram);
-            break;
-        default:
-            System.out.println("Running Default Speed Test");
-            p = new Producer(regulator, totalMessageCount);
-            c = new Consumer(regulator, totalMessageCount, histogram);
+            case PBSize:
+                System.out.println("Running Protobuf Size Test");
+                p = new PBSizeProducer(regulator, totalMessageCount);
+                c = new PBSizeConsumer(regulator, totalMessageCount, histogram);
+                break;
+            case PBSpeed:
+                System.out.println("Running Protobuf Speed Test");
+                p = new PBSpeedProducer(regulator, totalMessageCount);
+                c = new PBSpeedConsumer(regulator, totalMessageCount, histogram);
+                break;
+            case Avro:
+                System.out.println("Running Avro Test");
+                p = new AvroProducer(regulator, totalMessageCount);
+                c = new AvroConsumer(regulator, totalMessageCount, histogram);
+                break;
+            case Empty:
+            default:
+                System.out.println("Running Empty Test");
+                //NOTE: when adding new protocols to test start by making copies of the EmptyProducer and EmptyConsumer
+                p = new EmptyProducer(regulator, totalMessageCount);
+                c = new EmptyConsumer(regulator, totalMessageCount, histogram);
         }
 
 
@@ -115,10 +128,29 @@ public class App {
         
         log.info("K Mgs Per Second {}",kmsgPerSec);
         log.info("Total duration {}ms",durationInMs);
-        log.info("TotalBytes {}",totalBytesSent);
+        log.info("{} bytes sent",totalBytesSent);
 
         log.info("{} Kbps",kBitsPerSec);
         log.info("{} Mbps",mBitsPerSec);
+        
+        
+        long totalGeneratedRawSize = totalSizeGenerated(totalMessageCount);
+        float fraction = ((float)totalBytesSent)/((float)totalGeneratedRawSize);
+        float compressionPct = 100f*(1f-fraction);
+        log.info("{} raw test bytes ",totalGeneratedRawSize);
+        log.info("{}% compressed", compressionPct);
+        
+        
+    }
+    
+    private static long totalSizeGenerated(int totalCount) {
+        long sum = 0;
+        SequenceExampleAFactory testDataFactory = new SequenceExampleAFuzzGenerator();
+        int i = totalCount;
+        while (--i>=0) {
+            sum += testDataFactory.nextObject().estimatedBytes();
+        }
+        return sum;        
     }
     
     private static String getOptArg(String longName, String shortName, String[] args, String defaultValue) {
