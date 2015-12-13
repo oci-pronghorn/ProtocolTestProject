@@ -18,6 +18,8 @@ import com.ociweb.protocoltest.avro.AvroProducer;
 import com.ociweb.protocoltest.data.SequenceExampleA;
 import com.ociweb.protocoltest.data.SequenceExampleAFactory;
 import com.ociweb.protocoltest.data.build.SequenceExampleAFuzzGenerator;
+import com.ociweb.protocoltest.kryo.KryoConsumer;
+import com.ociweb.protocoltest.kryo.KryoProducer;
 import com.ociweb.protocoltest.speedTest.*;
 import com.ociweb.protocoltest.template.EmptyConsumer;
 import com.ociweb.protocoltest.template.EmptyProducer;
@@ -35,7 +37,9 @@ public class App {
         Empty,
         PBSpeed,
         PBSize,
+        Kryo,
         Avro
+        
     }
 
     public static void main(String[] args) {
@@ -67,7 +71,7 @@ public class App {
         Runnable p,c;
 
         int totalMessageCount = 100000; //large fixed value for running the test
-        TestType type = TestType.Empty;
+        TestType type = TestType.Kryo;
         switch (type) {
             case PBSize:
                 System.out.println("Running Protobuf Size Test");
@@ -83,6 +87,11 @@ public class App {
                 System.out.println("Running Avro Test");
                 p = new AvroProducer(regulator, totalMessageCount);
                 c = new AvroConsumer(regulator, totalMessageCount, histogram);
+                break;
+            case Kryo:
+                System.out.println("Running Kryo Test");
+                p = new KryoProducer(regulator, totalMessageCount);
+                c = new KryoConsumer(regulator, totalMessageCount, histogram);
                 break;
             case Empty:
             default:
