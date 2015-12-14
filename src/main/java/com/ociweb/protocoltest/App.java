@@ -178,7 +178,7 @@ public class App {
         long bitsSent = totalBytesSent * 8L;
         float mBitsPerSec = (1000L*bitsSent)/(float)(durationInMs*1024*1024); 
         float kBitsPerSec = (1000L*bitsSent)/(float)(durationInMs*1024); 
-        long kmsgPerSec = totalMessageCount/durationInMs;
+        float kmsgPerSec = totalMessageCount/(float)durationInMs;
         
         System.out.println("Latency Value in microseconds");
         histogram.outputPercentileDistribution(System.out, 1000.0);
