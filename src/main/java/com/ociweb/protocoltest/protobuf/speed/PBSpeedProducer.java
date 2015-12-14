@@ -29,10 +29,7 @@ public class PBSpeedProducer implements Runnable {
         this.regulator = regulator;
         this.count = count;
     }
-    public enum PBRunType {
-        Translate,
-        DirectSend
-    }
+
 //    private int memoizedSerializedSizeSample = -1;
 //    private int[] memoizedSampleSizes = new int[2048];
 //    private int totalSamples = 2048;
@@ -143,8 +140,6 @@ public class PBSpeedProducer implements Runnable {
             long lastNow = 0;
 
             SequenceExampleAFactory testDataFactory = new SequenceExampleAFuzzGenerator();
-            PBRunType runType = PBRunType.Translate;
-
 //            Arrays.fill(memoizedSampleSizes, -1);
             PBQuery.Builder query_builder = PBQuery.newBuilder();
             PBQuery.PBSample.Builder sample_builder = PBQuery.PBSample.newBuilder();
@@ -156,7 +151,7 @@ public class PBSpeedProducer implements Runnable {
                     
                     //NOTE: this is how objects are fetched for writing.
                     SequenceExampleA writeMe = testDataFactory.nextObject();
-                    switch (runType) {
+                    switch (App.pbSpeedRunType) {
                     case DirectSend:
 //                      writeDelimitedTo(out, writeMe);
                         writeTo(out, writeMe);
