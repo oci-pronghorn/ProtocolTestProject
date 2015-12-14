@@ -74,7 +74,6 @@ public class ThriftConsumer implements Runnable {
     @Override
     public void run() {
         ThriftQuery query = new ThriftQuery();
-        TDeserializer deserializer = new TDeserializer();
         try {
             
 
@@ -94,17 +93,8 @@ public class ThriftConsumer implements Runnable {
                 while (regulator.hasNextChunk() && --i>=0) {
                     lastNow= App.recordLatency(lastNow, histogram, blobReader);
 
-//                    boolean next = true;
-//                    do {
-                        query.read(protocol);
-//                        System.out.println("read = " + query);
-                        // TODO add the object to a collection
-//                        if (transport.getBytesRemainingInBuffer() <= 0) {
-//                            next = false;
-//                        }
-//                    } while (next);
+                    query.read(protocol);
 
-                    
                     if (!compareSamples(query, compareToMe)) {
                         log.error("Does not match "+query+" vs "+compareToMe);
                     }
