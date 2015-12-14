@@ -20,6 +20,8 @@ import com.ociweb.protocoltest.data.SequenceExampleAFactory;
 import com.ociweb.protocoltest.data.build.SequenceExampleAFuzzGenerator;
 import com.ociweb.protocoltest.kryo.KryoConsumer;
 import com.ociweb.protocoltest.kryo.KryoProducer;
+import com.ociweb.protocoltest.phast.PhastConsumer;
+import com.ociweb.protocoltest.phast.PhastProducer;
 import com.ociweb.protocoltest.speedTest.*;
 import com.ociweb.protocoltest.template.EmptyConsumer;
 import com.ociweb.protocoltest.template.EmptyProducer;
@@ -38,7 +40,8 @@ public class App {
         PBSpeed,
         PBSize,
         Kryo,
-        Avro
+        Avro,
+        Phast
         
     }
     public enum PBSpeedRunType {
@@ -80,6 +83,9 @@ public class App {
             break;
         case "Avro":
             type = TestType.Avro;
+            break;
+        case "Pronghorn":
+            type = TestType.Phast;
             break;
         case "Empty":
         default:
@@ -133,6 +139,11 @@ public class App {
                 System.out.println("Running Kryo Test");
                 p = new KryoProducer(regulator, totalMessageCount);
                 c = new KryoConsumer(regulator, totalMessageCount, histogram);
+                break;
+            case Phast:
+                System.out.println("Running Phast Test");
+                p = new PhastProducer(regulator, totalMessageCount);
+                c = new PhastConsumer(regulator, totalMessageCount, histogram);
                 break;
             case Empty:
             default:
