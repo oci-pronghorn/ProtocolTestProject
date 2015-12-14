@@ -84,7 +84,7 @@ public class AvroConsumer implements Runnable {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        log.info("Empty consumer finished");
+        log.info("Avro consumer finished");
     }
 
 }

@@ -58,6 +58,6 @@ public class KryoProducer implements Runnable {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        log.info("Empty producer finished");
+        log.info("Kryo producer finished");
     }
 }

@@ -63,7 +63,7 @@ public class KryoConsumer implements Runnable {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        log.info("Empty consumer finished");
+        log.info("Kryo consumer finished");
     }
 
 }

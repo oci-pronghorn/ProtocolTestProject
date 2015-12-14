@@ -75,6 +75,6 @@ public class AvroProducer implements Runnable {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        log.info("Empty producer finished");
+        log.info("Avro producer finished");
     }
 }
