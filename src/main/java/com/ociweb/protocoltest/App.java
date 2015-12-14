@@ -23,6 +23,8 @@ import com.ociweb.protocoltest.kryo.KryoProducer;
 import com.ociweb.protocoltest.speedTest.*;
 import com.ociweb.protocoltest.template.EmptyConsumer;
 import com.ociweb.protocoltest.template.EmptyProducer;
+import com.ociweb.protocoltest.thrift.ThriftConsumer;
+import com.ociweb.protocoltest.thrift.ThriftProducer;
 import com.ociweb.protocoltest.protobuf.speed.PBSpeedConsumer;
 import com.ociweb.protocoltest.protobuf.speed.PBSpeedProducer;
 import com.ociweb.protocoltest.protobuf.size.PBSizeConsumer;
@@ -38,9 +40,10 @@ public class App {
         PBSpeed,
         PBSize,
         Kryo,
-        Avro
-        
+        Avro,
+        Thrift
     }
+
     public enum PBSpeedRunType {
         Translate,
         DirectSend
@@ -80,6 +83,9 @@ public class App {
             break;
         case "Avro":
             type = TestType.Avro;
+            break;
+        case "Thrift":
+            type = TestType.Thrift;
             break;
         case "Empty":
         default:
@@ -133,6 +139,11 @@ public class App {
                 System.out.println("Running Kryo Test");
                 p = new KryoProducer(regulator, totalMessageCount);
                 c = new KryoConsumer(regulator, totalMessageCount, histogram);
+                break;
+            case Thrift:
+                System.out.println("Running Thrift Test");
+                p = new ThriftProducer(regulator, totalMessageCount);
+                c = new ThriftConsumer(regulator, totalMessageCount, histogram);
                 break;
             case Empty:
             default:

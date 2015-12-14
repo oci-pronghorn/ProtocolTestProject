@@ -48,6 +48,11 @@
       <artifactId>protobuf-java</artifactId>
       <version>2.6.1</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.thrift</groupId>
+      <artifactId>libthrift</artifactId>
+      <version>0.9.3</version>
+    </dependency>
     
      <dependency>
         <groupId>com.esotericsoftware</groupId>
@@ -130,6 +135,13 @@
                   <arg value="--java_out=src/main/java" />
                   <arg value="src/main/protobuf/pb_msg_speed.proto" />
                   <arg value="src/main/protobuf/pb_msg_size.proto" />
+                </exec>
+                <exec executable="thrift">
+                  <arg value="--gen" />
+                  <arg value="java" />
+                  <arg value="-out" />
+                  <arg value="src/main/java" />
+                  <arg value="src/main/thrift/thrift_msg.thrift" />
                 </exec>
               </tasks>
               <sourceRoot>src/main/java</sourceRoot>

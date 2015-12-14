@@ -11,3 +11,5 @@ buildNumber.properties
 /.settings
 *~
 *QueryProvider.java
+ThriftQuery.java
+ThriftSample.java
