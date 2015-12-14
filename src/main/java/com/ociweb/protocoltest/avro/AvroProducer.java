@@ -2,6 +2,13 @@ package com.ociweb.protocoltest.avro;
 
 import java.io.OutputStream;
 
+import org.apache.avro.Schema;
+import org.apache.avro.file.DataFileStream;
+import org.apache.avro.file.DataFileWriter;
+import org.apache.avro.reflect.ReflectData;
+import org.apache.avro.reflect.ReflectDatumWriter;
+import org.apache.avro.specific.SpecificData;
+import org.apache.avro.specific.SpecificDatumWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +40,14 @@ public class AvroProducer implements Runnable {
             DataOutputBlobWriter<RawDataSchema> blobWriter = regulator.getBlobWriter();
             long lastNow = 0;
 
+            
+            Schema schema = ReflectData.get().getSchema(SequenceExampleA.class);
+            
+        //    Schema schema = SpecificData.get().getSchema(SequenceExampleA.class);
+            //DataFileWriter writer = new DataFileWriter(new SpecificDatumWriter(schema));
+            DataFileWriter writer = null;
+
+            
             SequenceExampleAFactory testDataFactory = new SequenceExampleAFuzzGenerator();
             
             
@@ -41,14 +56,16 @@ public class AvroProducer implements Runnable {
             while (i>0) {
                 while (regulator.hasRoomForChunk() && --i>=0) { //Note we are only dec when there is room for write
                     lastNow = App.recordSentTime(lastNow, blobWriter);
-
-                    //TODO: write the writeMeObject to the out
                     
-                    if (true) {
-                    throw new UnsupportedOperationException("Not yet implemented");
+                    if (null==writer) {
+                        writer = new DataFileWriter(new ReflectDatumWriter(schema));
+                        writer.create(schema, out);
                     }
                     
-                    
+
+                    writer.append(writeMe);
+                    writer.flush();
+
                     writeMe = testDataFactory.nextObject();   
                 }
                 Thread.yield(); //we are faster than the consumer

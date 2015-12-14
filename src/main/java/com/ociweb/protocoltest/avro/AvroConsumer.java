@@ -1,8 +1,16 @@
 package com.ociweb.protocoltest.avro;
 
 import java.io.InputStream;
+import java.util.Iterator;
 
 import org.HdrHistogram.Histogram;
+import org.apache.avro.Schema;
+import org.apache.avro.file.DataFileStream;
+import org.apache.avro.io.DatumReader;
+import org.apache.avro.reflect.ReflectData;
+import org.apache.avro.reflect.ReflectDatumReader;
+import org.apache.avro.specific.SpecificData;
+import org.apache.avro.specific.SpecificDatumReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +44,16 @@ public class AvroConsumer implements Runnable {
             DataInputBlobReader<RawDataSchema> blobReader = regulator.getBlobReader();
             long lastNow = 0;
 
+            Schema schema = ReflectData.get().getSchema(SequenceExampleA.class);
+            //Schema schema = SpecificData.get().getSchema(SequenceExampleA.class);
+            
+            //DatumReader datumReader =  new SpecificDatumReader(schema);
+            DatumReader datumReader =  new ReflectDatumReader(schema);
+            
+            
+            DataFileStream reader = null;   
+            Iterator<SequenceExampleA> objIterator = null;
+            
 
             SequenceExampleA compareToMe = testDataFactory.nextObject();
             int i = count;
@@ -43,12 +61,21 @@ public class AvroConsumer implements Runnable {
                 while (regulator.hasNextChunk() && --i>=0) {
                     lastNow= App.recordLatency(lastNow, histogram, blobReader);
                     
-                    if (true) {
-                    throw new UnsupportedOperationException("Not yet implemented");
+                    if (null==reader) {
+                        reader = new DataFileStream(in, datumReader);   
+                        objIterator = reader.iterator();
                     }
-                    //TODO: read your data from in
                     
-                    //TODO: compare against compareToMe before we fetch the next value.
+                    
+                    
+                    if (!objIterator.hasNext()) {
+                        log.error("count is off");
+                    }
+                    SequenceExampleA obj = objIterator.next();
+                  
+                    if (!obj.equals(compareToMe)) {
+                        log.error("does not match");
+                    }
                     
                     compareToMe = testDataFactory.nextObject();
                 }

@@ -71,7 +71,7 @@ public class App {
         Runnable p,c;
 
         int totalMessageCount = 100000; //large fixed value for running the test
-        TestType type = TestType.Kryo;
+        TestType type = TestType.Avro;
         switch (type) {
             case PBSize:
                 System.out.println("Running Protobuf Size Test");
