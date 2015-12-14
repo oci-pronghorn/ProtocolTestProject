@@ -114,10 +114,6 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.2</version>
 				<configuration>
-				   
-				    <compilerArguments>
-				        <profile>compact3</profile>
-				    </compilerArguments>
 					<target>1.8</target>
 					<source>1.8</source>
 					<encoding>UTF-8</encoding>
