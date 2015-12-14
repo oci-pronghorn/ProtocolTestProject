@@ -20,6 +20,8 @@ import com.ociweb.protocoltest.data.SequenceExampleAFactory;
 import com.ociweb.protocoltest.data.build.SequenceExampleAFuzzGenerator;
 import com.ociweb.protocoltest.kryo.KryoConsumer;
 import com.ociweb.protocoltest.kryo.KryoProducer;
+import com.ociweb.protocoltest.phast.PhastConsumer;
+import com.ociweb.protocoltest.phast.PhastProducer;
 import com.ociweb.protocoltest.speedTest.*;
 import com.ociweb.protocoltest.template.EmptyConsumer;
 import com.ociweb.protocoltest.template.EmptyProducer;
@@ -41,7 +43,8 @@ public class App {
         PBSize,
         Kryo,
         Avro,
-        Thrift
+        Thrift,
+        Phast
     }
 
     public enum PBSpeedRunType {
@@ -86,6 +89,9 @@ public class App {
             break;
         case "Thrift":
             type = TestType.Thrift;
+            break;
+        case "Pronghorn":
+            type = TestType.Phast;
             break;
         case "Empty":
         default:
@@ -145,6 +151,11 @@ public class App {
                 p = new ThriftProducer(regulator, totalMessageCount);
                 c = new ThriftConsumer(regulator, totalMessageCount, histogram);
                 break;
+            case Phast:
+                System.out.println("Running Phast Test");
+                p = new PhastProducer(regulator, totalMessageCount);
+                c = new PhastConsumer(regulator, totalMessageCount, histogram);
+                break;
             case Empty:
             default:
                 System.out.println("Running Empty Test");
@@ -178,7 +189,7 @@ public class App {
         long bitsSent = totalBytesSent * 8L;
         float mBitsPerSec = (1000L*bitsSent)/(float)(durationInMs*1024*1024); 
         float kBitsPerSec = (1000L*bitsSent)/(float)(durationInMs*1024); 
-        long kmsgPerSec = totalMessageCount/durationInMs;
+        float kmsgPerSec = totalMessageCount/(float)durationInMs;
         
         System.out.println("Latency Value in microseconds");
         histogram.outputPercentileDistribution(System.out, 1000.0);
