@@ -41,11 +41,54 @@ public class App {
         Avro
         
     }
+    public enum PBSpeedRunType {
+        Translate,
+        DirectSend
+    }
+    
+    public static PBSpeedRunType pbSpeedRunType = PBSpeedRunType.Translate;
 
     public static void main(String[] args) {
 
-        String destinationIp = getOptArg("-destination","-d", args, "127.0.0.1");
+        String testType = getOptArg("-testType","-t", args, "Empty");
+        String bandwidthMpbs = getOptArg("-bandwidth","-b", args, "102400");
+        String termWait = getOptArg("-termWaitSec","-w", args, "240");
+
+
+        TestType type;
+
+        switch(testType) {
+        case "PBSpeed":
+            type = TestType.PBSpeed;
+
+            String pbRunType = getOptArg("-PBSpeedRunType","-p", args, "Translate");
+            switch (pbRunType) {
+            case "DirectSend":
+                pbSpeedRunType = PBSpeedRunType.DirectSend;
+                break;
+            case "Translate":
+            default:
+                pbSpeedRunType = PBSpeedRunType.Translate;
+            }
+
+            break;
+        case "PBSize":
+            type = TestType.PBSize;
+            break;
+        case "Kryo":
+            type = TestType.Kryo;
+            break;
+        case "Avro":
+            type = TestType.Avro;
+            break;
+        case "Empty":
+        default:
+            type = TestType.Empty;
+        }
         
+        long mbps = Long.parseLong(bandwidthMpbs);
+        long termination_wait = Long.parseLong(termWait); //Seconds to wait for test to complete
+
         log.info("Hello World, we are running...");
 
 //        SequenceExampleAFactory testDataFactory = new SequenceExampleAFuzzGenerator();
@@ -57,9 +100,8 @@ public class App {
         
         Histogram histogram = new Histogram(3600000000000L, 3);
         
-        long termination_wait = 240; //Seconds to wait for test to complete
         
-        long bitPerSecond = 100L*1024L*1024L*1024L;
+        long bitPerSecond = mbps*1024L*1024L;
         int maxWrittenChunksInFlight = 100;
         int maxWrittenChunkSizeInBytes= 50*1024;
         StreamRegulator regulator = new StreamRegulator(bitPerSecond, maxWrittenChunksInFlight, maxWrittenChunkSizeInBytes);
@@ -71,7 +113,6 @@ public class App {
         Runnable p,c;
 
         int totalMessageCount = 100000; //large fixed value for running the test
-        TestType type = TestType.Avro;
         switch (type) {
             case PBSize:
                 System.out.println("Running Protobuf Size Test");
