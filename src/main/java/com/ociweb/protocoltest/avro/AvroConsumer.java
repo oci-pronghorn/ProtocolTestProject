@@ -27,11 +27,13 @@ public class AvroConsumer implements Runnable {
     private final StreamRegulator regulator;
     private final int count;
     private final Histogram histogram;
+    private final SequenceExampleAFactory testDataFactory;
 
-    public AvroConsumer(StreamRegulator regulator, int count, Histogram histogram) {
+    public AvroConsumer(StreamRegulator regulator, int count, Histogram histogram, SequenceExampleAFactory testExpectedDataFactory) {
         this.regulator = regulator;
         this.count = count;
         this.histogram = histogram;
+        this.testDataFactory = testExpectedDataFactory;
     }
 
     @Override
@@ -39,22 +41,18 @@ public class AvroConsumer implements Runnable {
         try {
 
             InputStream in = regulator.getInputStream();
-            SequenceExampleAFactory testDataFactory = new SequenceExampleAFuzzGenerator();
+          
             
             DataInputBlobReader<RawDataSchema> blobReader = regulator.getBlobReader();
             long lastNow = 0;
 
             Schema schema = ReflectData.get().getSchema(SequenceExampleA.class);
-            //Schema schema = SpecificData.get().getSchema(SequenceExampleA.class);
-            
-            //DatumReader datumReader =  new SpecificDatumReader(schema);
             DatumReader datumReader =  new ReflectDatumReader(schema);
             
             
             DataFileStream reader = null;   
-            Iterator<SequenceExampleA> objIterator = null;
+            SequenceExampleA obj = null;
             
-
             SequenceExampleA compareToMe = testDataFactory.nextObject();
             int i = count;
             while (i>0) {
@@ -63,23 +61,19 @@ public class AvroConsumer implements Runnable {
                     
                     if (null==reader) {
                         reader = new DataFileStream(in, datumReader);   
-                        objIterator = reader.iterator();
+                       // objIterator = reader.iterator();
+                        obj = (SequenceExampleA) reader.next();
+                    }  else {
+                        obj = (SequenceExampleA) reader.next(obj);
                     }
                     
-                    
-                    
-                    if (!objIterator.hasNext()) {
-                        log.error("count is off");
-                    }
-                    SequenceExampleA obj = objIterator.next();
-                  
                     if (!obj.equals(compareToMe)) {
                         log.error("does not match");
                     }
                     
                     compareToMe = testDataFactory.nextObject();
                 }
-                Thread.yield(); //Only happens when the pipe is empty and there is nothing to read, eg PBSizeConsumer is faster than producer.
+                App.commmonWait(); //Only happens when the pipe is empty and there is nothing to read.
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

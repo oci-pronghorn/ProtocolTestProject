@@ -3,6 +3,7 @@ package com.ociweb.protocoltest;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.LockSupport;
 
 import org.HdrHistogram.Histogram;
 import org.slf4j.Logger;
@@ -18,6 +19,7 @@ import com.ociweb.protocoltest.avro.AvroProducer;
 import com.ociweb.protocoltest.data.SequenceExampleA;
 import com.ociweb.protocoltest.data.SequenceExampleAFactory;
 import com.ociweb.protocoltest.data.build.SequenceExampleAFuzzGenerator;
+import com.ociweb.protocoltest.data.build.SequenceExampleAFuzzGeneratorCustom;
 import com.ociweb.protocoltest.kryo.KryoConsumer;
 import com.ociweb.protocoltest.kryo.KryoProducer;
 import com.ociweb.protocoltest.phast.PhastConsumer;
@@ -58,44 +60,44 @@ public class App {
 
         String testType = getOptArg("-testType","-t", args, "Empty");
         String bandwidthMpbs = getOptArg("-bandwidth","-b", args, "102400");
-        String termWait = getOptArg("-termWaitSec","-w", args, "240");
+        String termWait = getOptArg("-termWaitSec","-w", args, "500");
 
 
         TestType type;
 
         switch(testType) {
-        case "PBSpeed":
-            type = TestType.PBSpeed;
-
-            String pbRunType = getOptArg("-PBSpeedRunType","-p", args, "Translate");
-            switch (pbRunType) {
-            case "DirectSend":
-                pbSpeedRunType = PBSpeedRunType.DirectSend;
+            case "PBSpeed":
+                type = TestType.PBSpeed;
+    
+                String pbRunType = getOptArg("-PBSpeedRunType","-p", args, "Translate");
+                switch (pbRunType) {
+                case "DirectSend":
+                    pbSpeedRunType = PBSpeedRunType.DirectSend;
+                    break;
+                case "Translate":
+                default:
+                    pbSpeedRunType = PBSpeedRunType.Translate;
+                }
+    
                 break;
-            case "Translate":
+            case "PBSize":
+                type = TestType.PBSize;
+                break;
+            case "Kryo":
+                type = TestType.Kryo;
+                break;
+            case "Avro":
+                type = TestType.Avro;
+                break;
+            case "Thrift":
+                type = TestType.Thrift;
+                break;
+            case "Pronghorn":
+                type = TestType.Phast;
+                break;
+            case "Empty":
             default:
-                pbSpeedRunType = PBSpeedRunType.Translate;
-            }
-
-            break;
-        case "PBSize":
-            type = TestType.PBSize;
-            break;
-        case "Kryo":
-            type = TestType.Kryo;
-            break;
-        case "Avro":
-            type = TestType.Avro;
-            break;
-        case "Thrift":
-            type = TestType.Thrift;
-            break;
-        case "Pronghorn":
-            type = TestType.Phast;
-            break;
-        case "Empty":
-        default:
-            type = TestType.Empty;
+                type = TestType.Empty;
         }
         
         long mbps = Long.parseLong(bandwidthMpbs);
@@ -114,7 +116,7 @@ public class App {
         
         
         long bitPerSecond = mbps*1024L*1024L;
-        int maxWrittenChunksInFlight = 100;
+        int maxWrittenChunksInFlight = 512;
         int maxWrittenChunkSizeInBytes= 50*1024;
         StreamRegulator regulator = new StreamRegulator(bitPerSecond, maxWrittenChunksInFlight, maxWrittenChunkSizeInBytes);
 
@@ -124,44 +126,47 @@ public class App {
 
         Runnable p,c;
 
-        int totalMessageCount = 100000; //large fixed value for running the test
+        SequenceExampleAFactory testSentDataFactory = new SequenceExampleAFuzzGeneratorCustom();
+        SequenceExampleAFactory testExpectedDataFactory = new SequenceExampleAFuzzGeneratorCustom();
+        
+        int totalMessageCount = 100000;//*1000;//e fixed value for running the test
         switch (type) {
             case PBSize:
                 System.out.println("Running Protobuf Size Test");
-                p = new PBSizeProducer(regulator, totalMessageCount);
-                c = new PBSizeConsumer(regulator, totalMessageCount, histogram);
+                p = new PBSizeProducer(regulator, totalMessageCount, testSentDataFactory);
+                c = new PBSizeConsumer(regulator, totalMessageCount, histogram, testExpectedDataFactory);
                 break;
             case PBSpeed:
                 System.out.println("Running Protobuf Speed Test");
-                p = new PBSpeedProducer(regulator, totalMessageCount);
-                c = new PBSpeedConsumer(regulator, totalMessageCount, histogram);
+                p = new PBSpeedProducer(regulator, totalMessageCount, testSentDataFactory);
+                c = new PBSpeedConsumer(regulator, totalMessageCount, histogram, testExpectedDataFactory);
                 break;
             case Avro:
                 System.out.println("Running Avro Test");
-                p = new AvroProducer(regulator, totalMessageCount);
-                c = new AvroConsumer(regulator, totalMessageCount, histogram);
+                p = new AvroProducer(regulator, totalMessageCount, testSentDataFactory);
+                c = new AvroConsumer(regulator, totalMessageCount, histogram, testExpectedDataFactory);
                 break;
             case Kryo:
                 System.out.println("Running Kryo Test");
-                p = new KryoProducer(regulator, totalMessageCount);
-                c = new KryoConsumer(regulator, totalMessageCount, histogram);
+                p = new KryoProducer(regulator, totalMessageCount, testSentDataFactory);
+                c = new KryoConsumer(regulator, totalMessageCount, histogram, testExpectedDataFactory);
                 break;
             case Thrift:
                 System.out.println("Running Thrift Test");
-                p = new ThriftProducer(regulator, totalMessageCount);
-                c = new ThriftConsumer(regulator, totalMessageCount, histogram);
+                p = new ThriftProducer(regulator, totalMessageCount, testSentDataFactory);
+                c = new ThriftConsumer(regulator, totalMessageCount, histogram, testExpectedDataFactory);
                 break;
             case Phast:
-                System.out.println("Running Phast Test");
-                p = new PhastProducer(regulator, totalMessageCount);
-                c = new PhastConsumer(regulator, totalMessageCount, histogram);
+                System.out.println("Running Pronghorn Test");
+                p = new PhastProducer(regulator, totalMessageCount, testSentDataFactory);
+                c = new PhastConsumer(regulator, totalMessageCount, histogram, testExpectedDataFactory);
                 break;
             case Empty:
             default:
                 System.out.println("Running Empty Test");
                 //NOTE: when adding new protocols to test start by making copies of the EmptyProducer and EmptyConsumer
-                p = new EmptyProducer(regulator, totalMessageCount);
-                c = new EmptyConsumer(regulator, totalMessageCount, histogram);
+                p = new EmptyProducer(regulator, totalMessageCount, testSentDataFactory);
+                c = new EmptyConsumer(regulator, totalMessageCount, histogram, testExpectedDataFactory);
         }
 
 
@@ -173,6 +178,18 @@ public class App {
 
         executor.shutdown();//prevent any new submissions to execution service but let those started run.
 
+//
+//  Block used for profile record, not normaly used.
+//        
+//        try {
+//            Thread.sleep(60*1000);
+//        } catch (InterruptedException e1) {
+//           return;
+//        }
+//        System.out.println("one minute has passed");
+//        
+        
+        
         try {
             if (!executor.awaitTermination(termination_wait, TimeUnit.SECONDS)) {
                 log.error("test time out, no valid results");
@@ -213,6 +230,10 @@ public class App {
         log.info("{}% compressed", compressionPct);
         
         
+    }
+    
+    public static void commmonWait() {
+        LockSupport.parkNanos(10000);
     }
     
     private static long totalSizeGenerated(int totalCount) {

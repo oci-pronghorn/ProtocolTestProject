@@ -26,11 +26,13 @@ public class ThriftConsumer implements Runnable {
     private final StreamRegulator regulator;
     private final int count;
     private final Histogram histogram;
+    private final SequenceExampleAFactory testDataFactory;
 
-    public ThriftConsumer(StreamRegulator regulator, int count, Histogram histogram) {
+    public ThriftConsumer(StreamRegulator regulator, int count, Histogram histogram, SequenceExampleAFactory testExpectedDataFactory) {
         this.regulator = regulator;
         this.count = count;
         this.histogram = histogram;
+        this.testDataFactory = testExpectedDataFactory;
     }
 
     private int countSamplesReceived = 0;
@@ -81,7 +83,7 @@ public class ThriftConsumer implements Runnable {
             TIOStreamTransport transport = new TIOStreamTransport(in) ;
             final TProtocol protocol = new TCompactProtocol.Factory().getProtocol(transport);
 
-            SequenceExampleAFactory testDataFactory = new SequenceExampleAFuzzGenerator();
+          
             
             DataInputBlobReader<RawDataSchema> blobReader = regulator.getBlobReader();
             long lastNow = 0;
@@ -101,7 +103,7 @@ public class ThriftConsumer implements Runnable {
                     query.clear();
                     compareToMe = testDataFactory.nextObject();
                 }
-                Thread.yield(); //Only happens when the pipe is empty and there is nothing to read, eg PBSizeConsumer is faster than producer.
+                App.commmonWait(); //Only happens when the pipe is empty and there is nothing to read, eg PBSizeConsumer is faster than producer.
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

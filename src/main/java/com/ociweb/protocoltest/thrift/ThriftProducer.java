@@ -24,10 +24,12 @@ public class ThriftProducer implements Runnable {
 
     private final StreamRegulator regulator;
     private final int count;
+    private final SequenceExampleAFactory testDataFactory;
 
-    public ThriftProducer(StreamRegulator regulator, int count) {
+    public ThriftProducer(StreamRegulator regulator, int count, SequenceExampleAFactory testSentDataFactory) {
         this.regulator = regulator;
         this.count = count;
+        this.testDataFactory = testSentDataFactory;
     }
     
     @Override
@@ -38,7 +40,7 @@ public class ThriftProducer implements Runnable {
             DataOutputBlobWriter<RawDataSchema> blobWriter = regulator.getBlobWriter();
             long lastNow = 0;
 
-            SequenceExampleAFactory testDataFactory = new SequenceExampleAFuzzGenerator();
+            
             
             OutputStream out = regulator.getOutputStream();
             TIOStreamTransport transport = new TIOStreamTransport(out) ;
@@ -70,7 +72,7 @@ public class ThriftProducer implements Runnable {
                     query.clear();
                     writeMe = testDataFactory.nextObject();   
                 }
-                Thread.yield(); //we are faster than the consumer
+                App.commmonWait(); //we are faster than the consumer
             }
             transport.close();
 

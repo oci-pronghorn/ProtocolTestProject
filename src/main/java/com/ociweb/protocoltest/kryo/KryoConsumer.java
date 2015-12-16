@@ -24,11 +24,13 @@ public class KryoConsumer implements Runnable {
     private final int count;
     private final Histogram histogram;
     private final Kryo kryo = new Kryo();
+    private final  SequenceExampleAFactory testDataFactory;
 
-    public KryoConsumer(StreamRegulator regulator, int count, Histogram histogram) {
+    public KryoConsumer(StreamRegulator regulator, int count, Histogram histogram, SequenceExampleAFactory testExpectedDataFactory) {
         this.regulator = regulator;
         this.count = count;
         this.histogram = histogram;
+        this.testDataFactory = testExpectedDataFactory;
     }
 
     @Override
@@ -38,7 +40,7 @@ public class KryoConsumer implements Runnable {
 
             Input input = new Input(regulator.getInputStream());
             
-            SequenceExampleAFactory testDataFactory = new SequenceExampleAFuzzGenerator();
+           
             
             DataInputBlobReader<RawDataSchema> blobReader = regulator.getBlobReader();
             long lastNow = 0;
@@ -58,7 +60,7 @@ public class KryoConsumer implements Runnable {
                     
                     compareToMe = testDataFactory.nextObject();
                 }
-                Thread.yield(); //Only happens when the pipe is empty and there is nothing to read, eg PBSizeConsumer is faster than producer.
+                App.commmonWait(); //Only happens when the pipe is empty and there is nothing to read, eg PBSizeConsumer is faster than producer.
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

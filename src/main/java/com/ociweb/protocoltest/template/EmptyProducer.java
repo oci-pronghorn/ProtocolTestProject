@@ -19,10 +19,12 @@ public class EmptyProducer implements Runnable {
 
     private final StreamRegulator regulator;
     private final int count;
+    private final SequenceExampleAFactory testDataFactory;
 
-    public EmptyProducer(StreamRegulator regulator, int count) {
+    public EmptyProducer(StreamRegulator regulator, int count, SequenceExampleAFactory testSentDataFactory) {
         this.regulator = regulator;
         this.count = count;
+        this.testDataFactory = testSentDataFactory;
     }
     
     @Override
@@ -33,8 +35,6 @@ public class EmptyProducer implements Runnable {
             DataOutputBlobWriter<RawDataSchema> blobWriter = regulator.getBlobWriter();
             long lastNow = 0;
 
-            SequenceExampleAFactory testDataFactory = new SequenceExampleAFuzzGenerator();
-            
             
             SequenceExampleA writeMe = testDataFactory.nextObject();            
             int i = count;

@@ -1,7 +1,5 @@
 package com.ociweb.protocoltest.kryo;
 
-import java.io.OutputStream;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +11,6 @@ import com.ociweb.pronghorn.pipe.util.StreamRegulator;
 import com.ociweb.protocoltest.App;
 import com.ociweb.protocoltest.data.SequenceExampleA;
 import com.ociweb.protocoltest.data.SequenceExampleAFactory;
-import com.ociweb.protocoltest.data.build.SequenceExampleAFuzzGenerator;
 
 public class KryoProducer implements Runnable {
 
@@ -22,10 +19,12 @@ public class KryoProducer implements Runnable {
     private final StreamRegulator regulator;
     private final int count;
     private final Kryo kryo = new Kryo();
+    private final SequenceExampleAFactory testDataFactory;
 
-    public KryoProducer(StreamRegulator regulator, int count) {
+    public KryoProducer(StreamRegulator regulator, int count, SequenceExampleAFactory testSentDataFactory) {
         this.regulator = regulator;
         this.count = count;
+        this.testDataFactory = testSentDataFactory;
     }
     
     @Override
@@ -36,7 +35,7 @@ public class KryoProducer implements Runnable {
             DataOutputBlobWriter<RawDataSchema> blobWriter = regulator.getBlobWriter();
             long lastNow = 0;
 
-            SequenceExampleAFactory testDataFactory = new SequenceExampleAFuzzGenerator();
+           
             
             Output out = new Output(regulator.getOutputStream());
             
@@ -51,7 +50,7 @@ public class KryoProducer implements Runnable {
                     
                     writeMe = testDataFactory.nextObject();   
                 }
-                Thread.yield(); //we are faster than the consumer
+                App.commmonWait(); //we are faster than the consumer
             }
 
 

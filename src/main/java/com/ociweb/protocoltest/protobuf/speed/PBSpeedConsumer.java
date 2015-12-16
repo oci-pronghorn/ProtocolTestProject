@@ -3,6 +3,7 @@ package com.ociweb.protocoltest.protobuf.speed;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.concurrent.locks.LockSupport;
 
 import org.HdrHistogram.Histogram;
 import org.slf4j.Logger;
@@ -24,11 +25,13 @@ public class PBSpeedConsumer implements Runnable {
     private final StreamRegulator regulator;
     private final int count;
     private final Histogram histogram;
-
-    public PBSpeedConsumer(StreamRegulator regulator, int count, Histogram histogram) {
+    private final  SequenceExampleAFactory testDataFactory;
+    
+    public PBSpeedConsumer(StreamRegulator regulator, int count, Histogram histogram, SequenceExampleAFactory testExpectedDataFactory) {
         this.regulator = regulator;
         this.count = count;
         this.histogram = histogram;
+        this.testDataFactory = testExpectedDataFactory;
     }
 
     private int countSamplesReceived = 0;
@@ -74,7 +77,7 @@ public class PBSpeedConsumer implements Runnable {
         try {
 
             InputStream in = regulator.getInputStream();
-            SequenceExampleAFactory testDataFactory = new SequenceExampleAFuzzGenerator();
+           
 
             DataInputBlobReader<RawDataSchema> blobReader = regulator.getBlobReader();
             long lastNow = 0;
@@ -95,7 +98,7 @@ public class PBSpeedConsumer implements Runnable {
 
 
                 }
-                Thread.yield(); //Only happens when the pipe is empty and there is nothing to read, eg PBSpeedConsumer is faster than producer.
+                App.commmonWait(); //Only happens when the pipe is empty and there is nothing to read, eg PBSpeedConsumer is faster than producer.
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

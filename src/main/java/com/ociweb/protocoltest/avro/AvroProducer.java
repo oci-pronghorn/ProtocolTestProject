@@ -18,6 +18,7 @@ import com.ociweb.pronghorn.pipe.util.StreamRegulator;
 import com.ociweb.protocoltest.App;
 import com.ociweb.protocoltest.data.SequenceExampleA;
 import com.ociweb.protocoltest.data.SequenceExampleAFactory;
+import com.ociweb.protocoltest.data.SequenceExampleASample;
 import com.ociweb.protocoltest.data.build.SequenceExampleAFuzzGenerator;
 
 public class AvroProducer implements Runnable {
@@ -26,10 +27,12 @@ public class AvroProducer implements Runnable {
 
     private final StreamRegulator regulator;
     private final int count;
-
-    public AvroProducer(StreamRegulator regulator, int count) {
+    private final  SequenceExampleAFactory testDataFactory;
+    
+    public AvroProducer(StreamRegulator regulator, int count, SequenceExampleAFactory testSentDataFactory) {
         this.regulator = regulator;
         this.count = count;
+        this.testDataFactory = testSentDataFactory;
     }
     
     @Override
@@ -39,16 +42,10 @@ public class AvroProducer implements Runnable {
             OutputStream out = regulator.getOutputStream();
             DataOutputBlobWriter<RawDataSchema> blobWriter = regulator.getBlobWriter();
             long lastNow = 0;
-
             
             Schema schema = ReflectData.get().getSchema(SequenceExampleA.class);
             
-        //    Schema schema = SpecificData.get().getSchema(SequenceExampleA.class);
-            //DataFileWriter writer = new DataFileWriter(new SpecificDatumWriter(schema));
             DataFileWriter writer = null;
-
-            
-            SequenceExampleAFactory testDataFactory = new SequenceExampleAFuzzGenerator();
             
             
             SequenceExampleA writeMe = testDataFactory.nextObject();            
@@ -68,7 +65,7 @@ public class AvroProducer implements Runnable {
 
                     writeMe = testDataFactory.nextObject();   
                 }
-                Thread.yield(); //we are faster than the consumer
+                App.commmonWait(); //we are faster than the consumer
             }
 
 

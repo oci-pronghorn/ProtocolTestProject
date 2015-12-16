@@ -24,11 +24,13 @@ public class PBSizeConsumer implements Runnable {
     private final StreamRegulator regulator;
     private final int count;
     private final Histogram histogram;
+    private final SequenceExampleAFactory testDataFactory;
 
-    public PBSizeConsumer(StreamRegulator regulator, int count, Histogram histogram) {
+    public PBSizeConsumer(StreamRegulator regulator, int count, Histogram histogram, SequenceExampleAFactory testExpectedDataFactory) {
         this.regulator = regulator;
         this.count = count;
         this.histogram = histogram;
+        this.testDataFactory = testExpectedDataFactory;
     }
 
     private int countSamplesReceived = 0;
@@ -74,7 +76,7 @@ public class PBSizeConsumer implements Runnable {
         try {
 
             InputStream in = regulator.getInputStream();
-            SequenceExampleAFactory testDataFactory = new SequenceExampleAFuzzGenerator();
+           
             
             DataInputBlobReader<RawDataSchema> blobReader = regulator.getBlobReader();
             long lastNow = 0;
@@ -96,7 +98,7 @@ public class PBSizeConsumer implements Runnable {
                     
 
                 }
-                Thread.yield(); //Only happens when the pipe is empty and there is nothing to read, eg PBSizeConsumer is faster than producer.
+                App.commmonWait();//Only happens when the pipe is empty and there is nothing to read, eg PBSizeConsumer is faster than producer.
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

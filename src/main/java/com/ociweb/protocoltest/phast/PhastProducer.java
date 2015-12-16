@@ -13,6 +13,7 @@ import com.ociweb.protocoltest.data.PhastWriter;
 import com.ociweb.protocoltest.data.SequenceExampleA;
 import com.ociweb.protocoltest.data.SequenceExampleAFactory;
 import com.ociweb.protocoltest.data.build.SequenceExampleAFuzzGenerator;
+import com.ociweb.protocoltest.data.build.SequenceExampleAFuzzGeneratorCustom;
 
 public class PhastProducer implements Runnable {
 
@@ -20,11 +21,13 @@ public class PhastProducer implements Runnable {
 
     private final StreamRegulator regulator;
     private final int count;
-
+    private final SequenceExampleAFactory testDataFactory;
     
-    public PhastProducer(StreamRegulator regulator, int count) {
+    
+    public PhastProducer(StreamRegulator regulator, int count, SequenceExampleAFactory testSentDataFactory) {
         this.regulator = regulator;
         this.count = count;
+        this.testDataFactory = testSentDataFactory;
     }
     
     @Override
@@ -35,9 +38,6 @@ public class PhastProducer implements Runnable {
             OutputStream out = regulator.getOutputStream();
             DataOutputBlobWriter<RawDataSchema> blobWriter = regulator.getBlobWriter();
             long lastNow = 0;
-
-            SequenceExampleAFactory testDataFactory = new SequenceExampleAFuzzGenerator();
-            
             
             SequenceExampleA writeMe = testDataFactory.nextObject();            
             int i = count;
@@ -49,13 +49,13 @@ public class PhastProducer implements Runnable {
                     
                     writeMe = testDataFactory.nextObject();   
                 }
-                Thread.yield(); //we are faster than the consumer
+                App.commmonWait(); //we are faster than the consumer
             }
 
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        log.info("Empty producer finished");
+        log.info("Pronghorn producer finished");
     }
 }

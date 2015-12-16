@@ -21,10 +21,12 @@ public class PBSizeProducer implements Runnable {
 
     private final StreamRegulator regulator;
     private final int count;
+    private final SequenceExampleAFactory testDataFactory;
 
-    public PBSizeProducer(StreamRegulator regulator, int count) {
+    public PBSizeProducer(StreamRegulator regulator, int count, SequenceExampleAFactory testSentDataFactory) {
         this.regulator = regulator;
         this.count = count;
+        this.testDataFactory = testSentDataFactory;
     }
     
     @Override
@@ -35,7 +37,6 @@ public class PBSizeProducer implements Runnable {
             DataOutputBlobWriter<RawDataSchema> blobWriter = regulator.getBlobWriter();
             long lastNow = 0;
 
-            SequenceExampleAFactory testDataFactory = new SequenceExampleAFuzzGenerator();
             PBQuery.Builder query_builder = PBQuery.newBuilder();
             PBQuery.PBSample.Builder sample_builder = PBQuery.PBSample.newBuilder();
             int i = count;
@@ -70,7 +71,7 @@ public class PBSizeProducer implements Runnable {
                     
                     
                 }
-                Thread.yield(); //we are faster than the consumer
+                App.commmonWait(); //we are faster than the consumer
             }
 
 

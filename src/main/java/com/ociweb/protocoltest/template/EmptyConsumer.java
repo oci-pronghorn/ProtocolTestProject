@@ -19,11 +19,13 @@ public class EmptyConsumer implements Runnable {
     private final StreamRegulator regulator;
     private final int count;
     private final Histogram histogram;
-
-    public EmptyConsumer(StreamRegulator regulator, int count, Histogram histogram) {
+    private final SequenceExampleAFactory testDataFactory;
+    
+    public EmptyConsumer(StreamRegulator regulator, int count, Histogram histogram, SequenceExampleAFactory testExpectedDataFactory) {
         this.regulator = regulator;
         this.count = count;
         this.histogram = histogram;
+        this.testDataFactory = testExpectedDataFactory;
     }
 
     @Override
