@@ -54,6 +54,9 @@ public class PhastConsumer implements Runnable {
                     PhastReader.readFromInputStream(pReader, targetObject, in);
                     if (!targetObject.equals(compareToMe)) {
                         log.error("Does not match");
+                        log.error(targetObject.toString());
+                        log.error(compareToMe.toString());
+                        
                     }
                     compareToMe = testDataFactory.nextObject();
                     

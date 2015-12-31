@@ -18,6 +18,7 @@ import com.ociweb.protocoltest.avro.AvroConsumer;
 import com.ociweb.protocoltest.avro.AvroProducer;
 import com.ociweb.protocoltest.data.SequenceExampleA;
 import com.ociweb.protocoltest.data.SequenceExampleAFactory;
+import com.ociweb.protocoltest.data.SequenceExampleASchema;
 import com.ociweb.protocoltest.data.build.SequenceExampleAFuzzGenerator;
 import com.ociweb.protocoltest.data.build.SequenceExampleAFuzzGeneratorCustom;
 import com.ociweb.protocoltest.kryo.KryoConsumer;
@@ -104,20 +105,15 @@ public class App {
         long termination_wait = Long.parseLong(termWait); //Seconds to wait for test to complete
 
         log.info("Hello World, we are running...");
-
-//        SequenceExampleAFactory testDataFactory = new SequenceExampleAFuzzGenerator();
-//
-//        //NOTE: this is how objects are fetched for writing.
-//        SequenceExampleA writeMe = testDataFactory.nextObject();
-        
-        
         
         Histogram histogram = new Histogram(3600000000000L, 3);
         
         
         long bitPerSecond = mbps*1024L*1024L;
         int maxWrittenChunksInFlight = 8;//to minimize latency (littles law) this is kept small.
-        int maxWrittenChunkSizeInBytes= 50*1024;
+        int maxWrittenChunkSizeInBytes= (int)(SequenceExampleA.estimatedBytes(SequenceExampleASchema.FIXED_SAMPLE_COUNT) * 10);
+        
+        
         StreamRegulator regulator = new StreamRegulator(bitPerSecond, maxWrittenChunksInFlight, maxWrittenChunkSizeInBytes);
 
         CPUMonitor cpuMonitor = new CPUMonitor(1000);
@@ -129,7 +125,13 @@ public class App {
         SequenceExampleAFactory testSentDataFactory = new SequenceExampleAFuzzGeneratorCustom();
         SequenceExampleAFactory testExpectedDataFactory = new SequenceExampleAFuzzGeneratorCustom();
         
-        int totalMessageCount = 100000;// fixed value for running the test
+        int totalMessageCount = 100_000;// fixed value for running the test
+        
+        //for small values must grow message count to lengthen the test duration beyond 1 second for accurate results
+        if (SequenceExampleASchema.FIXED_SAMPLE_COUNT<128) {
+            totalMessageCount *= 100;
+        }
+        
         switch (type) {
             case PBSize:
                 System.out.println("Running Protobuf Size Test");
@@ -226,14 +228,15 @@ public class App {
         long totalGeneratedRawSize = totalSizeGenerated(totalMessageCount);
         float fraction = ((float)totalBytesSent)/((float)totalGeneratedRawSize);
         float compressionPct = 100f*(1f-fraction);
-        log.info("{} raw test bytes ",totalGeneratedRawSize);
+        log.info("{} B raw test bytes ",totalGeneratedRawSize);
+        log.info("{} B message size ",totalGeneratedRawSize/totalMessageCount);
         log.info("{}% compressed", compressionPct);
         
         
     }
     
     public static void commmonWait() {
-       LockSupport.parkNanos(10);
+      // LockSupport.parkNanos(10); //rarely needed when we have contention over the regulator
     }
     
     private static long totalSizeGenerated(int totalCount) {

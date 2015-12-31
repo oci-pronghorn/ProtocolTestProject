@@ -32,16 +32,8 @@ public class PBSpeedProducer implements Runnable {
         this.testDataFactory = testSentDataFactory;
     }
 
-//    private int memoizedSerializedSizeSample = -1;
-//    private int[] memoizedSampleSizes = new int[2048];
-//    private int totalSamples = 2048;
-//    private Map<Integer, Integer> memoizedSampleSizes = new HashMap<Integer, Integer>(); ;
     public int getSerializedSize(final SequenceExampleASample sample) {
-//      int location = sample.getId() % totalSamples;
       int size;// = memoizedSampleSizes.get(sample.getId());
-//      System.out.println("sample id: "+sample.getId() % 2048);
-//      if (memoizedSampleSizes[location] != -1) return memoizedSampleSizes[location];
-
       size = 0;
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(1, sample.getId());
@@ -51,8 +43,7 @@ public class PBSpeedProducer implements Runnable {
           .computeInt32Size(3, sample.getMeasurement());
         size += com.google.protobuf.CodedOutputStream
           .computeInt32Size(4, sample.getAction());
-//        memoizedSampleSizes[location] = size;
-//        memoizedSerializedSizeSample = size;
+
       return size;
     }
 

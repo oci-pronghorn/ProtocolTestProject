@@ -43,9 +43,9 @@ public class AvroProducer implements Runnable {
             DataOutputBlobWriter<RawDataSchema> blobWriter = regulator.getBlobWriter();
             long lastNow = 0;
             
-            Schema schema = ReflectData.get().getSchema(SequenceExampleA.class);
             
             DataFileWriter writer = null;
+            Schema schema = ReflectData.get().getSchema(SequenceExampleA.class);
             
             
             SequenceExampleA writeMe = testDataFactory.nextObject();            
@@ -55,10 +55,10 @@ public class AvroProducer implements Runnable {
                     lastNow = App.recordSentTime(lastNow, blobWriter);
                     
                     if (null==writer) {
-                        writer = new DataFileWriter(new ReflectDatumWriter(schema));
+                        ReflectDatumWriter dout = new ReflectDatumWriter(schema);                        
+                        writer = new DataFileWriter(dout);
                         writer.create(schema, out);
                     }
-                    
 
                     writer.append(writeMe);
                     writer.flush();
