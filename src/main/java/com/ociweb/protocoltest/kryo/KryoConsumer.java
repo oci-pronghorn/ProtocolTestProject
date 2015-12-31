@@ -1,22 +1,17 @@
 package com.ociweb.protocoltest.kryo;
 
-import java.io.InputStream;
-
 import org.HdrHistogram.Histogram;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.Serializer;
 import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
 import com.ociweb.pronghorn.pipe.DataInputBlobReader;
 import com.ociweb.pronghorn.pipe.RawDataSchema;
 import com.ociweb.pronghorn.pipe.util.StreamRegulator;
 import com.ociweb.protocoltest.App;
 import com.ociweb.protocoltest.data.SequenceExampleA;
 import com.ociweb.protocoltest.data.SequenceExampleAFactory;
-import com.ociweb.protocoltest.data.build.SequenceExampleAFuzzGenerator;
 public class KryoConsumer implements Runnable {
 
     private static final Logger log = LoggerFactory.getLogger(KryoConsumer.class);
@@ -36,7 +31,6 @@ public class KryoConsumer implements Runnable {
     @Override
     public void run() {
         try {
-            
 
             Input input = new Input(regulator.getInputStream());
             

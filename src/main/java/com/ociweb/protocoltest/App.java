@@ -116,11 +116,11 @@ public class App {
         
         
         long bitPerSecond = mbps*1024L*1024L;
-        int maxWrittenChunksInFlight = 512;
+        int maxWrittenChunksInFlight = 8;//to minimize latency (littles law) this is kept small.
         int maxWrittenChunkSizeInBytes= 50*1024;
         StreamRegulator regulator = new StreamRegulator(bitPerSecond, maxWrittenChunksInFlight, maxWrittenChunkSizeInBytes);
 
-        CPUMonitor cpuMonitor = new CPUMonitor(100);
+        CPUMonitor cpuMonitor = new CPUMonitor(1000);
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
 
@@ -129,7 +129,7 @@ public class App {
         SequenceExampleAFactory testSentDataFactory = new SequenceExampleAFuzzGeneratorCustom();
         SequenceExampleAFactory testExpectedDataFactory = new SequenceExampleAFuzzGeneratorCustom();
         
-        int totalMessageCount = 100000;//*1000;//e fixed value for running the test
+        int totalMessageCount = 100000;// fixed value for running the test
         switch (type) {
             case PBSize:
                 System.out.println("Running Protobuf Size Test");
@@ -187,7 +187,7 @@ public class App {
 //           return;
 //        }
 //        System.out.println("one minute has passed");
-//        
+        
         
         
         try {
@@ -233,7 +233,7 @@ public class App {
     }
     
     public static void commmonWait() {
-        LockSupport.parkNanos(10000);
+       LockSupport.parkNanos(10);
     }
     
     private static long totalSizeGenerated(int totalCount) {

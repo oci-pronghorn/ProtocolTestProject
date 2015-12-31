@@ -1,7 +1,6 @@
 package com.ociweb.protocoltest.phast;
 
 import java.io.InputStream;
-import java.util.concurrent.locks.LockSupport;
 
 import org.HdrHistogram.Histogram;
 import org.slf4j.Logger;
@@ -14,7 +13,6 @@ import com.ociweb.protocoltest.App;
 import com.ociweb.protocoltest.data.PhastReader;
 import com.ociweb.protocoltest.data.SequenceExampleA;
 import com.ociweb.protocoltest.data.SequenceExampleAFactory;
-import com.ociweb.protocoltest.data.build.SequenceExampleAFuzzGenerator;
 public class PhastConsumer implements Runnable {
 
     private static final Logger log = LoggerFactory.getLogger(PhastConsumer.class);
@@ -22,6 +20,7 @@ public class PhastConsumer implements Runnable {
     private final int count;
     private final Histogram histogram;
     private final SequenceExampleAFactory testDataFactory;
+    private final static boolean useNewObjects = false;
     
 
     public PhastConsumer(StreamRegulator regulator, int count, Histogram histogram, SequenceExampleAFactory testExpectedDataFactory) {
@@ -43,6 +42,7 @@ public class PhastConsumer implements Runnable {
             DataInputBlobReader<RawDataSchema> blobReader = regulator.getBlobReader();
             long lastNow = 0;
 
+            
             SequenceExampleA targetObject = new SequenceExampleA();
 
             SequenceExampleA compareToMe = testDataFactory.nextObject();
@@ -56,6 +56,10 @@ public class PhastConsumer implements Runnable {
                         log.error("Does not match");
                     }
                     compareToMe = testDataFactory.nextObject();
+                    
+                    if (useNewObjects) {
+                        targetObject = new SequenceExampleA();
+                    }
                 }
                 
                 App.commmonWait();//Only happens when the pipe is empty and there is nothing to read, eg PBSizeConsumer is faster than producer.
