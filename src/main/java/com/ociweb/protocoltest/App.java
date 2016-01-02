@@ -3,7 +3,6 @@ package com.ociweb.protocoltest;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.LockSupport;
 
 import org.HdrHistogram.Histogram;
 import org.slf4j.Logger;
@@ -19,21 +18,19 @@ import com.ociweb.protocoltest.avro.AvroProducer;
 import com.ociweb.protocoltest.data.SequenceExampleA;
 import com.ociweb.protocoltest.data.SequenceExampleAFactory;
 import com.ociweb.protocoltest.data.SequenceExampleASchema;
-import com.ociweb.protocoltest.data.build.SequenceExampleAFuzzGenerator;
 import com.ociweb.protocoltest.data.build.SequenceExampleAFuzzGeneratorCustom;
 import com.ociweb.protocoltest.kryo.KryoConsumer;
 import com.ociweb.protocoltest.kryo.KryoProducer;
 import com.ociweb.protocoltest.phast.PhastConsumer;
 import com.ociweb.protocoltest.phast.PhastProducer;
-import com.ociweb.protocoltest.speedTest.*;
+import com.ociweb.protocoltest.protobuf.size.PBSizeConsumer;
+import com.ociweb.protocoltest.protobuf.size.PBSizeProducer;
+import com.ociweb.protocoltest.protobuf.speed.PBSpeedConsumer;
+import com.ociweb.protocoltest.protobuf.speed.PBSpeedProducer;
 import com.ociweb.protocoltest.template.EmptyConsumer;
 import com.ociweb.protocoltest.template.EmptyProducer;
 import com.ociweb.protocoltest.thrift.ThriftConsumer;
 import com.ociweb.protocoltest.thrift.ThriftProducer;
-import com.ociweb.protocoltest.protobuf.speed.PBSpeedConsumer;
-import com.ociweb.protocoltest.protobuf.speed.PBSpeedProducer;
-import com.ociweb.protocoltest.protobuf.size.PBSizeConsumer;
-import com.ociweb.protocoltest.protobuf.size.PBSizeProducer;
 
 public class App {
 
@@ -241,7 +238,8 @@ public class App {
     
     private static long totalSizeGenerated(int totalCount) {
         long sum = 0;
-        SequenceExampleAFactory testDataFactory = new SequenceExampleAFuzzGenerator();
+        SequenceExampleAFactory testDataFactory = new SequenceExampleAFuzzGeneratorCustom();
+
         int i = totalCount;
         while (--i>=0) {
             sum += testDataFactory.nextObject().estimatedBytes();
