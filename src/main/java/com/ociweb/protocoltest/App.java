@@ -105,10 +105,17 @@ public class App {
         
         Histogram histogram = new Histogram(3600000000000L, 3);
         
+        int groupSize = 1; //This logic was only added becuase Avro needs to pre-fetch the next record.
+        if (TestType.Avro == type | TestType.Phast == type) {
+            groupSize = 1400 / (SequenceExampleASchema.FIXED_SAMPLE_COUNT+1);
+            if (groupSize<1) {
+                groupSize = 1;
+            }
+        }
         
         long bitPerSecond = mbps*1024L*1024L;
         int maxWrittenChunksInFlight = 8;//to minimize latency (littles law) this is kept small.
-        int maxWrittenChunkSizeInBytes= (int)(SequenceExampleA.estimatedBytes(SequenceExampleASchema.FIXED_SAMPLE_COUNT) * 10);
+        int maxWrittenChunkSizeInBytes= groupSize * (int)(SequenceExampleA.estimatedBytes(SequenceExampleASchema.FIXED_SAMPLE_COUNT) * 100);
         
         
         StreamRegulator regulator = new StreamRegulator(bitPerSecond, maxWrittenChunksInFlight, maxWrittenChunkSizeInBytes);
@@ -128,7 +135,6 @@ public class App {
         if (SequenceExampleASchema.FIXED_SAMPLE_COUNT<128) {
             totalMessageCount *= 100;
         }
-        
         switch (type) {
             case PBSize:
                 System.out.println("Running Protobuf Size Test");
@@ -141,9 +147,9 @@ public class App {
                 c = new PBSpeedConsumer(regulator, totalMessageCount, histogram, testExpectedDataFactory);
                 break;
             case Avro:
-                System.out.println("Running Avro Test");
-                p = new AvroProducer(regulator, totalMessageCount, testSentDataFactory);
-                c = new AvroConsumer(regulator, totalMessageCount, histogram, testExpectedDataFactory);
+                System.out.println("Running Avro Test");               
+                p = new AvroProducer(regulator, totalMessageCount, testSentDataFactory, groupSize);
+                c = new AvroConsumer(regulator, totalMessageCount, histogram, testExpectedDataFactory, groupSize);
                 break;
             case Kryo:
                 System.out.println("Running Kryo Test");
@@ -157,8 +163,8 @@ public class App {
                 break;
             case Phast:
                 System.out.println("Running Pronghorn Test");
-                p = new PhastProducer(regulator, totalMessageCount, testSentDataFactory);
-                c = new PhastConsumer(regulator, totalMessageCount, histogram, testExpectedDataFactory);
+                p = new PhastProducer(regulator, totalMessageCount, testSentDataFactory, groupSize);
+                c = new PhastConsumer(regulator, totalMessageCount, histogram, testExpectedDataFactory, groupSize);
                 break;
             case Empty:
             default:
@@ -229,6 +235,7 @@ public class App {
         log.info("{} B message size ",totalGeneratedRawSize/totalMessageCount);
         log.info("{}% compressed", compressionPct);
         
+        log.info("to estimate the latency divide by {} ",groupSize);
         
     }
     
@@ -288,7 +295,12 @@ public class App {
         
         long latency = System.nanoTime() - lastNow;
         if (latency>=0 && 0!=lastNow) {//conditional to protect against numerical overflow, see docs on nanoTime();
-            h.recordValue(latency);
+            try {
+                h.recordValue(latency);
+            } catch (ArrayIndexOutOfBoundsException outofbounds) {
+                //do not record
+                System.out.println("warning latency:"+latency+" was out of bounds");
+            }
         }
         return lastNow;
     }

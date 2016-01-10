@@ -22,12 +22,13 @@ public class PhastProducer implements Runnable {
     private final StreamRegulator regulator;
     private final int count;
     private final SequenceExampleAFactory testDataFactory;
+    private final int groupSize;
     
-    
-    public PhastProducer(StreamRegulator regulator, int count, SequenceExampleAFactory testSentDataFactory) {
+    public PhastProducer(StreamRegulator regulator, int count, SequenceExampleAFactory testSentDataFactory, int groupSize) {
         this.regulator = regulator;
         this.count = count;
         this.testDataFactory = testSentDataFactory;
+        this.groupSize = groupSize;
     }
     
     @Override
@@ -40,14 +41,16 @@ public class PhastProducer implements Runnable {
             long lastNow = 0;
             
             SequenceExampleA writeMe = testDataFactory.nextObject();            
-            int i = count;
+            int i = count/groupSize;
             while (i>0) {
                 while (regulator.hasRoomForChunk() && --i>=0) { //Note we are only dec when there is room for write
                     lastNow = App.recordSentTime(lastNow, blobWriter);
 
-                    PhastWriter.writeToOuputStream(pWriter, writeMe,  out);
-                    
-                    writeMe = testDataFactory.nextObject();   
+                    int g = groupSize;
+                    while (--g >= 0) {
+                        PhastWriter.writeToOuputStream(pWriter, writeMe,  out);                    
+                        writeMe = testDataFactory.nextObject();   
+                    }
                 }
                 App.commmonWait(); //we are faster than the consumer
             }

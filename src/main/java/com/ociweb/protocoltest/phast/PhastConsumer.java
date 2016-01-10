@@ -20,14 +20,15 @@ public class PhastConsumer implements Runnable {
     private final int count;
     private final Histogram histogram;
     private final SequenceExampleAFactory testDataFactory;
-    private final static boolean useNewObjects = false;
-    
+    private final static boolean useNewObjects = true;
+    private final int groupSize;
 
-    public PhastConsumer(StreamRegulator regulator, int count, Histogram histogram, SequenceExampleAFactory testExpectedDataFactory) {
+    public PhastConsumer(StreamRegulator regulator, int count, Histogram histogram, SequenceExampleAFactory testExpectedDataFactory, int groupSize) {
         this.regulator = regulator;
         this.count = count;
         this.histogram = histogram;
         this.testDataFactory = testExpectedDataFactory;
+        this.groupSize = groupSize;
     }
 
     @Override
@@ -46,23 +47,32 @@ public class PhastConsumer implements Runnable {
             SequenceExampleA targetObject = new SequenceExampleA();
 
             SequenceExampleA compareToMe = testDataFactory.nextObject();
-            int i = count;
+            int i = count/groupSize;
             while (i>0) {
                 while (regulator.hasNextChunk() && --i>=0) {
                     lastNow= App.recordLatency(lastNow, histogram, blobReader);
-                                       
-                    PhastReader.readFromInputStream(pReader, targetObject, in);
-                    if (!targetObject.equals(compareToMe)) {
-                        log.error("Does not match");
-                        log.error(targetObject.toString());
-                        log.error(compareToMe.toString());
-                        
-                    }
-                    compareToMe = testDataFactory.nextObject();
+                            
+                    PhastReader.fetchStreamIntoPipe(pReader, in);
                     
-                    if (useNewObjects) {
-                        targetObject = new SequenceExampleA();
+                    int g = groupSize;
+                    while (--g >= 0) {
+                        
+                        PhastReader.readFromInputStream(pReader, targetObject); 
+
+                        if (!targetObject.equals(compareToMe)) {
+                            log.error("Does not match");
+                            log.error(targetObject.toString());
+                            log.error(compareToMe.toString());
+                            
+                        }
+                        compareToMe = testDataFactory.nextObject();
+                        
+                        if (useNewObjects) {
+                            targetObject = new SequenceExampleA();
+                        }
                     }
+                    
+                    PhastReader.releaseStream(pReader);
                 }
                 
                 App.commmonWait();//Only happens when the pipe is empty and there is nothing to read, eg PBSizeConsumer is faster than producer.
