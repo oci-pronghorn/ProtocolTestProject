@@ -10,9 +10,9 @@ Testing the speed of different protocols
        This jar is fully self contained you can use it here or copy it elsewhere    
 3.  Run the test for a specfic protocol    
        java -jar protoTest.jar -t Kryo -b 10000 -w 5000            
-       -t <Kryo, Avro, Thrift, PBSize, PBSpeed, Pronghorn>    
-       -b <million bits per second, eg 1000 is 1Gbps>     
-       -W <timeout in seconds to quit test with error>     
+       -t Kryo, Avro, Thrift, PBSize, PBSpeed, Pronghorn    
+       -b million bits per second, eg 1000 is 1Gbps     
+       -W timeout in seconds to quit test with error     
 
 #Test Data 
 Any message structure used for a performance comparison requires a substantial setup time but, 
