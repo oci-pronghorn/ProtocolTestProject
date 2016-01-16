@@ -33,7 +33,6 @@ public class EmptyConsumer implements Runnable {
         try {
 
             InputStream in = regulator.getInputStream();
-            SequenceExampleAFactory testDataFactory = new SequenceExampleAFuzzGenerator();
             
             DataInputBlobReader<RawDataSchema> blobReader = regulator.getBlobReader();
             long lastNow = 0;
