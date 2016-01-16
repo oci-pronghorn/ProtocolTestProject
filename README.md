@@ -9,7 +9,8 @@ Testing the speed of different protocols
 2.  Look in the target folder for the protoTest.jar     
        This jar is fully self contained you can use it here or copy it elsewhere    
 3.  Run the test for a specfic protocol    
-       java -jar protoTest.jar -t Kryo -b 10000 -w 5000            
+       java -jar protoTest.jar -t Kryo -b 10000 -w 5000     
+              
        -t Kryo, Avro, Thrift, PBSize, PBSpeed, Pronghorn    
        -b million bits per second, eg 1000 is 1Gbps     
        -W timeout in seconds to quit test with error     
